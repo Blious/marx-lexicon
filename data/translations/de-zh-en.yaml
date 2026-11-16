@@ -1,0 +1,221 @@
+- id: translation-value-zh-Hans
+  source_sense_id: sense-de-wert-value
+  target_sense_id: sense-zh-Hans-jiazhi-value
+  scope:
+    work_ids:
+    - work-capital-1
+    edition_ids:
+    - edition-capital-de-mew23
+    note: 以所列德文数字转录及本组语例为证据范围；不自动外推到其他版本。
+  evidence_ids:
+  - att-value
+  note: 该译法见本组所列译本；项目选择与出版用词分别记录。
+  status: draft
+- id: translation-labour-power-zh-Hans
+  source_sense_id: sense-de-arbeitskraft-labour-power
+  target_sense_id: sense-zh-Hans-laodongli-labour-power
+  scope:
+    work_ids:
+    - work-capital-1
+    edition_ids:
+    - edition-capital-de-mew23
+    note: 以所列德文数字转录及本组语例为证据范围；不自动外推到其他版本。
+  evidence_ids:
+  - att-labour-power
+  note: 该译法见本组所列译本；项目选择与出版用词分别记录。
+  status: draft
+- id: translation-abstract-labour-zh-Hans
+  source_sense_id: sense-de-abstrakte-arbeit-abstract-labour
+  target_sense_id: sense-zh-Hans-chouxiang-laodong-abstract-labour
+  scope:
+    work_ids:
+    - work-capital-1
+    edition_ids:
+    - edition-capital-de-mew23
+    note: 以所列德文数字转录及本组语例为证据范围；不自动外推到其他版本。
+  evidence_ids:
+  - att-abstract-labour
+  note: 目标词条使用简短显示名“抽象劳动”；所引译本实际表达为“抽象人类劳动”。方案选择与语例字面形式分别保存。
+  status: draft
+- id: translation-estrangement-zh-Hans
+  source_sense_id: sense-de-entfremdung-estrangement
+  target_sense_id: sense-zh-Hans-yihua-estrangement
+  scope:
+    work_ids:
+    - work-manuscripts-1844
+    edition_ids:
+    - edition-manuscripts-de-mew
+    note: 以所列德文数字转录及本组语例为证据范围；不自动外推到其他版本。
+  evidence_ids:
+  - att-alienation-pair
+  note: 该译法见本组所列译本；项目选择与出版用词分别记录。
+  status: draft
+- id: translation-externalization-zh-Hans
+  source_sense_id: sense-de-entaeusserung-externalization
+  target_sense_id: sense-zh-Hans-waihua-externalization
+  scope:
+    work_ids:
+    - work-manuscripts-1844
+    edition_ids:
+    - edition-manuscripts-de-mew
+    note: 以所列德文数字转录及本组语例为证据范围；不自动外推到其他版本。
+  evidence_ids:
+  - att-alienation-pair
+  note: 该译法见本组所列译本；项目选择与出版用词分别记录。
+  status: draft
+- id: translation-aufhebung-religion-zh-Hans
+  source_sense_id: sense-de-aufhebung-aufhebung-religion
+  target_sense_id: sense-zh-Hans-yangqi-aufhebung-religion
+  scope:
+    work_ids:
+    - work-manuscripts-1844
+    edition_ids:
+    - edition-manuscripts-de-mew
+    note: 以所列德文数字转录及本组语例为证据范围；不自动外推到其他版本。
+  evidence_ids:
+  - att-aufhebung-religion
+  note: 该译法见本组所列译本；项目选择与出版用词分别记录。
+  status: draft
+- id: translation-aufhebung-property-zh-Hans
+  source_sense_id: sense-de-aufhebung-aufhebung-property
+  target_sense_id: sense-zh-Hans-yangqi-aufhebung-property
+  scope:
+    work_ids:
+    - work-manuscripts-1844
+    edition_ids:
+    - edition-manuscripts-de-mew
+    note: 以所列德文数字转录及本组语例为证据范围；不自动外推到其他版本。
+  evidence_ids:
+  - att-aufhebung-property
+  note: 该译法见本组所列译本；项目选择与出版用词分别记录。
+  status: draft
+- id: translation-aufheben-dialectical-zh-Hans
+  source_sense_id: sense-de-aufheben-aufheben-dialectical
+  target_sense_id: sense-zh-Hans-yangqi-aufheben-dialectical
+  scope:
+    work_ids:
+    - work-manuscripts-1844
+    edition_ids:
+    - edition-manuscripts-de-mew
+    note: 以所列德文数字转录及本组语例为证据范围；不自动外推到其他版本。
+  evidence_ids:
+  - att-aufheben-dialectical
+  note: 该译法见本组所列译本；项目选择与出版用词分别记录。
+  status: draft
+- id: translation-value-en
+  source_sense_id: sense-de-wert-value
+  target_sense_id: sense-en-value-value
+  scope:
+    work_ids:
+    - work-capital-1
+    edition_ids:
+    - edition-capital-de-mew23
+    note: 以所列德文数字转录及本组语例为证据范围；不自动外推到其他版本。
+  evidence_ids:
+  - att-value
+  note: 该译法见本组所列译本；项目选择与出版用词分别记录。
+  status: draft
+- id: translation-labour-power-en
+  source_sense_id: sense-de-arbeitskraft-labour-power
+  target_sense_id: sense-en-labour-power-labour-power
+  scope:
+    work_ids:
+    - work-capital-1
+    edition_ids:
+    - edition-capital-de-mew23
+    note: 以所列德文数字转录及本组语例为证据范围；不自动外推到其他版本。
+  evidence_ids:
+  - att-labour-power
+  note: 该译法见本组所列译本；项目选择与出版用词分别记录。
+  status: draft
+- id: translation-abstract-labour-en
+  source_sense_id: sense-de-abstrakte-arbeit-abstract-labour
+  target_sense_id: sense-en-abstract-labour-abstract-labour
+  scope:
+    work_ids:
+    - work-capital-1
+    edition_ids:
+    - edition-capital-de-mew23
+    note: 以所列德文数字转录及本组语例为证据范围；不自动外推到其他版本。
+  evidence_ids:
+  - att-abstract-labour
+  note: 目标词条使用简短显示名 abstract labour；所引实际表达为 human labour in the abstract。方案选择与语例字面形式分别保存。
+  status: draft
+- id: translation-estrangement-en
+  source_sense_id: sense-de-entfremdung-estrangement
+  target_sense_id: sense-en-estrangement-estrangement
+  scope:
+    work_ids:
+    - work-manuscripts-1844
+    edition_ids:
+    - edition-manuscripts-de-mew
+    note: 以所列德文数字转录及本组语例为证据范围；不自动外推到其他版本。
+  evidence_ids:
+  - att-alienation-pair
+  note: 该译法见本组所列译本；项目选择与出版用词分别记录。
+  status: draft
+- id: translation-externalization-en
+  source_sense_id: sense-de-entaeusserung-externalization
+  target_sense_id: sense-en-alienation-externalization
+  scope:
+    work_ids:
+    - work-manuscripts-1844
+    edition_ids:
+    - edition-manuscripts-de-mew
+    note: 以所列德文数字转录及本组语例为证据范围；不自动外推到其他版本。
+  evidence_ids:
+  - att-alienation-pair
+  note: 该译法见本组所列译本；项目选择与出版用词分别记录。
+  status: draft
+- id: translation-aufhebung-religion-en
+  source_sense_id: sense-de-aufhebung-aufhebung-religion
+  target_sense_id: sense-en-annulment-aufhebung-religion
+  scope:
+    work_ids:
+    - work-manuscripts-1844
+    edition_ids:
+    - edition-manuscripts-de-mew
+    note: 以所列德文数字转录及本组语例为证据范围；不自动外推到其他版本。
+  evidence_ids:
+  - att-aufhebung-religion
+  note: 该译法见本组所列译本；项目选择与出版用词分别记录。
+  status: draft
+- id: translation-aufhebung-property-en
+  source_sense_id: sense-de-aufhebung-aufhebung-property
+  target_sense_id: sense-en-transcendence-aufhebung-property
+  scope:
+    work_ids:
+    - work-manuscripts-1844
+    edition_ids:
+    - edition-manuscripts-de-mew
+    note: 以所列德文数字转录及本组语例为证据范围；不自动外推到其他版本。
+  evidence_ids:
+  - att-aufhebung-property
+  note: 该译法见本组所列译本；项目选择与出版用词分别记录。
+  status: draft
+- id: translation-aufheben-dialectical-en
+  source_sense_id: sense-de-aufheben-aufheben-dialectical
+  target_sense_id: sense-en-superseding-aufheben-dialectical
+  scope:
+    work_ids:
+    - work-manuscripts-1844
+    edition_ids:
+    - edition-manuscripts-de-mew
+    note: 以所列德文数字转录及本组语例为证据范围；不自动外推到其他版本。
+  evidence_ids:
+  - att-aufheben-dialectical
+  note: 该译法见本组所列译本；项目选择与出版用词分别记录。
+  status: draft
+- id: translation-labour-power-en-capacity
+  source_sense_id: sense-de-arbeitskraft-labour-power
+  target_sense_id: sense-en-capacity-for-labour-labour-power
+  scope:
+    work_ids:
+    - work-capital-1
+    edition_ids:
+    - edition-capital-de-mew23
+    note: 所引定义句的另一英语表达。
+  evidence_ids:
+  - att-labour-power
+  note: 该句并列 capacity for labour；示例方案优先使用 labour-power。
+  status: draft

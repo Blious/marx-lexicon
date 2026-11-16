@@ -1,0 +1,20 @@
+schema_version: '1'
+coverage_kind: editorial_inventory
+note: 此清单只记录首批样例的整理范围，不表示已提取或校对整部作品；暂不参与运行期构建。
+works:
+  - work_id: work-capital-1
+    languages: [de, zh-Hans, en]
+    sections: [商品第一章第一节, 劳动力定义所在节]
+    extraction: selected_examples
+    attestations: 3
+    alignment: passage_candidates
+    scholarly_review: pending
+    missing: [全书术语提取, 更多版次和译本, 纸本逐字核对, 词语级对应审定]
+  - work_id: work-manuscripts-1844
+    languages: [de, zh-Hans, en]
+    sections: [异化劳动, 私有财产和共产主义, 黑格尔批判]
+    extraction: selected_examples
+    attestations: 4
+    alignment: passage_candidates
+    scholarly_review: pending
+    missing: [全篇术语提取, 稿本编排比较, 更多译本, 纸本逐字核对, 词语级对应审定]

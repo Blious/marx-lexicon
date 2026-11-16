@@ -1,1 +1,69 @@
-# marx-lexicon
+# 马克思多语术语库
+
+以原文证据为基础的马克思术语库，面向 AI 翻译调用和人工查阅。词条、义项、概念、出版译文和项目译法分别保存，允许多种有条件的解释与译法并存。
+
+当前数据版本 **0.1.0**：六组德中英示例，共 22 个词条、8 个概念、7 组三语短语例及 17 条译法关系。示例包括 `Wert`、`Arbeitskraft`、`abstrakte Arbeit`、`Entfremdung`、`Entäußerung`、`Aufhebung`，另有 `Aufheben` 等附属词条。语例与解释仍是待学术审阅的工作稿，覆盖范围限于列出的作品、版本和上下文。
+
+## 安装与构建
+
+需要 Python 3.11 或更高版本，以及包含 FTS5 的 SQLite。以下命令在仓库根目录运行：
+
+```powershell
+python -m pip install -e ".[dev]"
+python -m marx_lexicon validate
+python -m marx_lexicon build
+```
+
+运行与测试均可在安装依赖后离线完成。默认数据库为 `build/lexicon.sqlite`；从其他目录调用时，在子命令前使用 `--root <仓库目录>`，或者对查询命令使用 `--database <数据库文件>`。
+
+## 查阅术语
+
+```powershell
+python -m marx_lexicon lookup 劳动力 --language zh-Hans --format markdown
+python -m marx_lexicon lookup Entäusserung --language de
+python -m marx_lexicon lookup alienation --language en
+python -m marx_lexicon read-entry entry-de-aufhebung --format markdown
+python -m marx_lexicon read-entry entry-zh-Hans-yangqi --format markdown --output build/扬弃.md
+```
+
+查询先检索原词与已登记词形，再查说明和语例。完整词条包含义项、译法、辨析文章、短引文、版本信息和出处链接。中文简体使用语言标签 `zh-Hans`。
+
+## 为翻译整理参考
+
+```powershell
+python -m marx_lexicon prepare-translation --text-file examples/economics.de.txt --source-language de --target-language zh-Hans --profile demo-de-zh --edition edition-capital-de-mew23 --format markdown --output build/economics.zh.md
+python -m marx_lexicon prepare-translation --text-file examples/economics.de.txt --source-language de --target-language en --profile demo-de-en --edition edition-capital-de-mew23 --output build/economics.en.json
+python -m marx_lexicon prepare-translation --text-file examples/philosophy.de.txt --source-language de --target-language en --profile demo-de-en --edition edition-manuscripts-de-mew --format markdown --output build/philosophy.en.md
+```
+
+经济学示例可得到 `value`、`labour-power` 和 `abstract labour` 等方案选择；哲学示例中的 `Aufhebung` 会保留两个语境候选。明确上下文后，可用 `--sense sense-de-aufhebung-aufhebung-property` 指定其中一个义项，其他术语仍正常处理。
+
+参考包包括输入中的位置、候选义项、方案选择、替代译法及证据。它不生成整段译文，也不通过关键词猜定多义词意义。省略版本或作品条件时，范围未确定的译法保留为候选，并提示补充语境。
+
+```powershell
+python -m marx_lexicon export-glossary --profile demo-de-zh --format markdown --output build/glossary.zh.md
+python -m marx_lexicon export-glossary --profile demo-de-en --output build/glossary.en.json
+python -m marx_lexicon export-schema --output schemas/dataset.schema.json
+python -m pytest
+```
+
+## 目录与维护
+
+| 目录 | 用途 |
+| --- | --- |
+| `data/entries/` | 各语言词条、词形和义项 |
+| `data/concepts/` | 概念说明和有依据的概念关系 |
+| `data/translations/` | 义项之间的译法及适用范围 |
+| `data/sources/` | 作品和具体出版／数字文本版本 |
+| `data/attestations/` | 短语例、术语位置和对应候选 |
+| `data/profiles/` | 固定数据版本的项目翻译方案 |
+| `articles/` | 中文辨析文章 |
+| `schemas/` | 由 Python 模型导出的 JSON Schema |
+| `src/marx_lexicon/` | 模型、构建、查询和命令行 |
+| `examples/` | 待译输入及操作说明 |
+| `tests/` | 数据和运行行为测试 |
+| `build/` | 本地数据库与导出文件，Git 忽略 |
+
+添加词条时先在 YAML 中登记作品、版本、义项、短语例和译法，必要时补充辨析文章，再运行 `validate` 和 `build`。ID 在改名时保持不变；扩大数据或调整模型时同时维护数据版本和相关翻译方案。
+
+详见[架构方案](docs/architecture.md)、[数据模型与编辑约定](docs/data-model.md)和[示例说明](examples/README.md)。本阶段提供本地数据与命令行；网页、API、MCP 和 TBX／SKOS 导出将在此基础上接入。

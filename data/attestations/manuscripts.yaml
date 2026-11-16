@@ -1,0 +1,269 @@
+- id: att-alienation-pair
+  note: 同一占有语境中两德文词的并列及所列中英译本用词；关系不得外推为全局同义。
+  passages:
+  - id: passage-alienation-de
+    edition_id: edition-manuscripts-de-mew
+    text: die Aneignung als Entfremdung, als Entäußerung.
+    location:
+      section: 第一手稿·异化劳动
+      url: https://www.marxists.org/deutsch/archiv/marx-engels/1844/oek-phil/1-4_frem.htm
+      printed_page: '512'
+      manuscript_page: XXII
+      precision: page
+      note: 短引文用于定位，HTML 排版空白已整理；未逐字比对纸本。
+    speaker: Karl Marx
+    material: body
+    mentions:
+    - entry_id: entry-de-entfremdung
+      sense_id: sense-de-entfremdung-estrangement
+      start: 18
+      end: 29
+    - entry_id: entry-de-entaeusserung
+      sense_id: sense-de-entaeusserung-externalization
+      start: 35
+      end: 46
+  - id: passage-alienation-zh-Hans
+    edition_id: edition-manuscripts-zh-2002
+    text: 异化，外化。
+    location:
+      section: 第一手稿·异化劳动和私有财产
+      url: https://www.marxists.org/chinese/marx/marxist.org-chinese-marx-1844.htm#10
+      printed_page: null
+      manuscript_page: null
+      precision: section
+      note: 短引文用于定位，HTML 排版空白已整理；未逐字比对纸本。
+    speaker: Karl Marx
+    material: body
+    mentions:
+    - entry_id: entry-zh-Hans-yihua
+      sense_id: sense-zh-Hans-yihua-estrangement
+      start: 0
+      end: 2
+    - entry_id: entry-zh-Hans-waihua
+      sense_id: sense-zh-Hans-waihua-externalization
+      start: 3
+      end: 5
+  - id: passage-alienation-en
+    edition_id: edition-manuscripts-en-milligan
+    text: appropriation as estrangement, as alienation.
+    location:
+      section: First Manuscript · Estranged Labour
+      url: https://www.marxists.org/archive/marx/works/1844/manuscripts/labour.htm
+      printed_page: null
+      manuscript_page: null
+      precision: section
+      note: 短引文用于定位，HTML 排版空白已整理；未逐字比对纸本。
+    speaker: Karl Marx
+    material: body
+    mentions:
+    - entry_id: entry-en-estrangement
+      sense_id: sense-en-estrangement-estrangement
+      start: 17
+      end: 29
+    - entry_id: entry-en-alienation
+      sense_id: sense-en-alienation-externalization
+      start: 34
+      end: 44
+  alignments:
+  - passage_ids:
+    - passage-alienation-de
+    - passage-alienation-zh-Hans
+    - passage-alienation-en
+    level: passage
+    note: 依据各语种上下文整理的对应候选；术语标注分别定位，不宣称已完成人工词对齐审定。
+    status: candidate
+  external_refs: []
+  review_status: unreviewed
+- id: att-aufhebung-religion
+  note: 黑格尔批判中讨论费尔巴哈的段落，保留该英译本的 annulment 用词。
+  passages:
+  - id: passage-religion-de
+    edition_id: edition-manuscripts-de-mew
+    text: Philosophie, Aufhebung der Religion und Theologie
+    location:
+      section: 第三手稿·黑格尔批判
+      url: https://www.marxists.org/deutsch/archiv/marx-engels/1844/oek-phil/3-5_hegl.htm
+      printed_page: '570'
+      manuscript_page: XII
+      precision: page
+      note: 短引文用于定位，HTML 排版空白已整理；未逐字比对纸本。
+    speaker: Karl Marx
+    material: body
+    mentions:
+    - entry_id: entry-de-aufhebung
+      sense_id: sense-de-aufhebung-aufhebung-religion
+      start: 13
+      end: 22
+  - id: passage-religion-zh-Hans
+    edition_id: edition-manuscripts-zh-2002
+    text: 宗教和神学的扬弃
+    location:
+      section: 第三手稿·对黑格尔的辩证法和整个哲学的批判
+      url: https://www.marxists.org/chinese/marx/marxist.org-chinese-marx-1844.htm#18
+      printed_page: null
+      manuscript_page: null
+      precision: section
+      note: 短引文用于定位，HTML 排版空白已整理；未逐字比对纸本。
+    speaker: Karl Marx
+    material: body
+    mentions:
+    - entry_id: entry-zh-Hans-yangqi
+      sense_id: sense-zh-Hans-yangqi-aufhebung-religion
+      start: 6
+      end: 8
+  - id: passage-religion-en
+    edition_id: edition-manuscripts-en-milligan
+    text: philosophy, annulment of religion and theology
+    location:
+      section: Third Manuscript · Critique of Hegel’s Philosophy in General
+      url: https://www.marxists.org/archive/marx/works/1844/manuscripts/hegel.htm
+      printed_page: null
+      manuscript_page: null
+      precision: section
+      note: 短引文用于定位，HTML 排版空白已整理；未逐字比对纸本。
+    speaker: Karl Marx
+    material: body
+    mentions:
+    - entry_id: entry-en-annulment
+      sense_id: sense-en-annulment-aufhebung-religion
+      start: 12
+      end: 21
+  alignments:
+  - passage_ids:
+    - passage-religion-de
+    - passage-religion-zh-Hans
+    - passage-religion-en
+    level: passage
+    note: 依据各语种上下文整理的对应候选；术语标注分别定位，不宣称已完成人工词对齐审定。
+    status: candidate
+  external_refs: []
+  review_status: unreviewed
+- id: att-aufhebung-property
+  note: 私有财产的积极扬弃语境；区别于上条的宗教语境，不将英译用词差异当作普遍规则。
+  passages:
+  - id: passage-property-de
+    edition_id: edition-manuscripts-de-mew
+    text: Der Kommunismus als positive Aufhebung des Privateigentums als menschlicher Selbstentfremdung
+    location:
+      section: 第三手稿·私有财产和共产主义
+      url: https://www.marxists.org/deutsch/archiv/marx-engels/1844/oek-phil/3-2_prkm.htm
+      printed_page: '536'
+      manuscript_page: IV
+      precision: page
+      note: 短引文用于定位，HTML 排版空白已整理；未逐字比对纸本。
+    speaker: Karl Marx
+    material: body
+    mentions:
+    - entry_id: entry-de-aufhebung
+      sense_id: sense-de-aufhebung-aufhebung-property
+      start: 29
+      end: 38
+  - id: passage-property-zh-Hans
+    edition_id: edition-manuscripts-zh-2002
+    text: 积极的扬弃
+    location:
+      section: 第三手稿·共产主义·第（3）项
+      url: https://www.marxists.org/chinese/marx/marxist.org-chinese-marx-1844.htm#15
+      printed_page: null
+      manuscript_page: null
+      precision: section
+      note: 短引文用于定位，HTML 排版空白已整理；未逐字比对纸本。
+    speaker: Karl Marx
+    material: body
+    mentions:
+    - entry_id: entry-zh-Hans-yangqi
+      sense_id: sense-zh-Hans-yangqi-aufhebung-property
+      start: 3
+      end: 5
+  - id: passage-property-en
+    edition_id: edition-manuscripts-en-milligan
+    text: Communism as the positive transcendence of private property
+    location:
+      section: Third Manuscript · Private Property and Communism, (3)
+      url: https://www.marxists.org/archive/marx/works/1844/manuscripts/comm.htm
+      printed_page: null
+      manuscript_page: null
+      precision: section
+      note: 短引文用于定位，HTML 排版空白已整理；未逐字比对纸本。
+    speaker: Karl Marx
+    material: body
+    mentions:
+    - entry_id: entry-en-transcendence
+      sense_id: sense-en-transcendence-aufhebung-property
+      start: 26
+      end: 39
+  alignments:
+  - passage_ids:
+    - passage-property-de
+    - passage-property-zh-Hans
+    - passage-property-en
+    level: passage
+    note: 依据各语种上下文整理的对应候选；术语标注分别定位，不宣称已完成人工词对齐审定。
+    status: candidate
+  external_refs: []
+  review_status: unreviewed
+- id: att-aufheben-dialectical
+  note: 附属词条 Aufheben 为名词化不定式，与 Aufhebung 分别建条；此处明确讨论否定与保存。
+  passages:
+  - id: passage-dialectical-de
+    edition_id: edition-manuscripts-de-mew
+    text: Eine eigentümliche Rolle spielt daher das Aufheben, worin die Verneinung und die Aufbewahrung,
+      die Bejahung verknüpft sind.
+    location:
+      section: 第三手稿·黑格尔批判
+      url: https://www.marxists.org/deutsch/archiv/marx-engels/1844/oek-phil/3-5_hegl.htm
+      printed_page: '581'
+      manuscript_page: XXIX
+      precision: page
+      note: 短引文用于定位，HTML 排版空白已整理；未逐字比对纸本。
+    speaker: Karl Marx
+    material: body
+    mentions:
+    - entry_id: entry-de-aufheben
+      sense_id: sense-de-aufheben-aufheben-dialectical
+      start: 42
+      end: 50
+  - id: passage-dialectical-zh-Hans
+    edition_id: edition-manuscripts-zh-2002
+    text: 否定和保存即肯定结合起来的扬弃
+    location:
+      section: 第三手稿·对黑格尔的辩证法和整个哲学的批判
+      url: https://www.marxists.org/chinese/marx/marxist.org-chinese-marx-1844.htm#18
+      printed_page: null
+      manuscript_page: null
+      precision: section
+      note: 短引文用于定位，HTML 排版空白已整理；未逐字比对纸本。
+    speaker: Karl Marx
+    material: body
+    mentions:
+    - entry_id: entry-zh-Hans-yangqi
+      sense_id: sense-zh-Hans-yangqi-aufheben-dialectical
+      start: 13
+      end: 15
+  - id: passage-dialectical-en
+    edition_id: edition-manuscripts-en-milligan
+    text: the act of superseding
+    location:
+      section: Third Manuscript · Critique of Hegel’s Philosophy in General
+      url: https://www.marxists.org/archive/marx/works/1844/manuscripts/hegel.htm
+      printed_page: null
+      manuscript_page: null
+      precision: section
+      note: 短引文用于定位，HTML 排版空白已整理；未逐字比对纸本。
+    speaker: Karl Marx
+    material: body
+    mentions:
+    - entry_id: entry-en-superseding
+      sense_id: sense-en-superseding-aufheben-dialectical
+      start: 11
+      end: 22
+  alignments:
+  - passage_ids:
+    - passage-dialectical-de
+    - passage-dialectical-zh-Hans
+    - passage-dialectical-en
+    level: passage
+    note: 依据各语种上下文整理的对应候选；术语标注分别定位，不宣称已完成人工词对齐审定。
+    status: candidate
+  external_refs: []
+  review_status: unreviewed

@@ -1,0 +1,8 @@
+schema_version: '1'
+dataset_version: 0.1.0
+title: 马克思多语术语库
+languages:
+- de
+- zh-Hans
+- en
+description: 六组德中英术语及附属词条，演示原文证据、义项与项目译法的分别管理；覆盖范围仅限所列语例。

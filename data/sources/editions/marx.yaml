@@ -1,0 +1,58 @@
+- id: edition-capital-de-mew23
+  work_id: work-capital-1
+  language: de
+  title: Das Kapital I · MEW 23 数字转录
+  kind: original
+  citation: Marx/Engels, Werke, Band 23. Dietz Verlag. MLWerke 数字转录之 e-und-p 镜像。
+  url: https://e-und-p.org/mlwerke.de/me/me23/me23_000.htm
+  note: 目录页标1962，所用章节页标1968；本条保留这一差异，不据此确定印次。章节页明确给出 MEW 书页，尚未逐字比对纸本。
+- id: edition-capital-zh-1972
+  work_id: work-capital-1
+  language: zh-Hans
+  title: 资本论第一卷 · 人民出版社1972年版转录
+  kind: translation
+  citation: 《马克思恩格斯全集》第23卷，人民出版社，1972。中文马克思主义文库据此整理的数字文本。
+  url: https://www.marxists.org/chinese/marx/capital/index.htm
+  publication_year: '1972'
+  note: 版本依据来自网站说明；本次未查验纸本版权页及书页，不补写中文页码。
+- id: edition-capital-en-moore-aveling
+  work_id: work-capital-1
+  language: en
+  title: Capital I · Moore/Aveling 英译本转录
+  kind: translation
+  citation: Capital, Volume I. Samuel Moore and Edward Aveling, translated; Friedrich Engels, edited.
+    MIA 标明据1887年英译本，Progress Publishers 底本，部分拼写现代化。
+  url: https://www.marxists.org/archive/marx/works/1867-c1/index.htm
+  translators:
+  - Samuel Moore
+  - Edward Aveling
+  note: 1887是英译初版年份；网页未明确所据 Progress 重印本年份，因此不填写 publication_year。部分纳入德文第四版变动，中英章号不同。
+- id: edition-manuscripts-de-mew
+  work_id: work-manuscripts-1844
+  language: de
+  title: 1844年手稿 · MEW 补卷德文转录
+  kind: original
+  citation: Marx/Engels, Werke, Ergänzungsband, erster Teil, S.465–588. Marxists Internet Archive 数字转录。
+  url: https://www.marxists.org/deutsch/archiv/marx-engels/1844/oek-phil/index.htm
+  note: 书页和稿页沿用该数字文本标记；不将数字转录直接标为手稿原件。
+- id: edition-manuscripts-zh-2002
+  work_id: work-manuscripts-1844
+  language: zh-Hans
+  title: 1844年手稿 · 人民出版社2002年版转录
+  kind: translation
+  citation: 《马克思恩格斯全集》中文第2版第3卷，人民出版社，2002年10月。中文马克思主义文库转录及校对。
+  url: https://www.marxists.org/chinese/marx/marxist.org-chinese-marx-1844.htm
+  publication_year: '2002'
+  note: 版本依据来自网页说明；未查验纸本页码。
+- id: edition-manuscripts-en-milligan
+  work_id: work-manuscripts-1844
+  language: en
+  title: 1844年手稿 · Milligan 英译本转录
+  kind: translation
+  citation: Economic and Philosophic Manuscripts of 1844. Martin Milligan, translated. Progress Publishers,
+    Moscow, 1959. MIA 数字转录。
+  url: https://www.marxists.org/archive/marx/works/1844/manuscripts/preface.htm
+  translators:
+  - Martin Milligan
+  publication_year: '1959'
+  note: 网页列明译者和出版信息；与同站其他英译版本分别登记。

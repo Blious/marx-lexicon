@@ -1,0 +1,914 @@
+{
+  "$defs": {
+    "Alignment": {
+      "additionalProperties": false,
+      "properties": {
+        "passage_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 2,
+          "title": "Passage Ids",
+          "type": "array"
+        },
+        "mention_refs": {
+          "items": {
+            "$ref": "#/$defs/MentionReference"
+          },
+          "title": "Mention Refs",
+          "type": "array"
+        },
+        "level": {
+          "enum": [
+            "passage",
+            "term"
+          ],
+          "title": "Level",
+          "type": "string"
+        },
+        "note": {
+          "title": "Note",
+          "type": "string"
+        },
+        "status": {
+          "default": "candidate",
+          "enum": [
+            "candidate",
+            "reviewed"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "passage_ids",
+        "level",
+        "note"
+      ],
+      "title": "Alignment",
+      "type": "object"
+    },
+    "Attestation": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "note": {
+          "title": "Note",
+          "type": "string"
+        },
+        "passages": {
+          "items": {
+            "$ref": "#/$defs/Passage"
+          },
+          "minItems": 1,
+          "title": "Passages",
+          "type": "array"
+        },
+        "alignments": {
+          "items": {
+            "$ref": "#/$defs/Alignment"
+          },
+          "title": "Alignments",
+          "type": "array"
+        },
+        "external_refs": {
+          "items": {
+            "$ref": "#/$defs/ExternalReference"
+          },
+          "title": "External Refs",
+          "type": "array"
+        },
+        "review_status": {
+          "default": "unreviewed",
+          "enum": [
+            "unreviewed",
+            "reviewed"
+          ],
+          "title": "Review Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "note",
+        "passages"
+      ],
+      "title": "Attestation",
+      "type": "object"
+    },
+    "Concept": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "labels": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Labels",
+          "type": "object"
+        },
+        "definition": {
+          "title": "Definition",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "relations": {
+          "items": {
+            "$ref": "#/$defs/Relation"
+          },
+          "title": "Relations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "labels",
+        "definition",
+        "evidence_ids"
+      ],
+      "title": "Concept",
+      "type": "object"
+    },
+    "Edition": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "work_id": {
+          "title": "Work Id",
+          "type": "string"
+        },
+        "language": {
+          "title": "Language",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "original",
+            "translation"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "citation": {
+          "title": "Citation",
+          "type": "string"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        },
+        "translators": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Translators",
+          "type": "array"
+        },
+        "publication_year": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Publication Year"
+        },
+        "note": {
+          "default": "",
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "work_id",
+        "language",
+        "title",
+        "kind",
+        "citation",
+        "url"
+      ],
+      "title": "Edition",
+      "type": "object"
+    },
+    "Entry": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "language": {
+          "title": "Language",
+          "type": "string"
+        },
+        "lemma": {
+          "title": "Lemma",
+          "type": "string"
+        },
+        "part_of_speech": {
+          "enum": [
+            "noun",
+            "verb",
+            "phrase",
+            "adjective"
+          ],
+          "title": "Part Of Speech",
+          "type": "string"
+        },
+        "forms": {
+          "items": {
+            "$ref": "#/$defs/Form"
+          },
+          "title": "Forms",
+          "type": "array"
+        },
+        "senses": {
+          "items": {
+            "$ref": "#/$defs/Sense"
+          },
+          "minItems": 1,
+          "title": "Senses",
+          "type": "array"
+        },
+        "article": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Article"
+        }
+      },
+      "required": [
+        "id",
+        "language",
+        "lemma",
+        "part_of_speech",
+        "senses"
+      ],
+      "title": "Entry",
+      "type": "object"
+    },
+    "ExternalReference": {
+      "additionalProperties": false,
+      "properties": {
+        "provider": {
+          "title": "Provider",
+          "type": "string"
+        },
+        "evidence_id": {
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Version"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        }
+      },
+      "required": [
+        "provider",
+        "evidence_id"
+      ],
+      "title": "ExternalReference",
+      "type": "object"
+    },
+    "Form": {
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "inflected",
+            "historical",
+            "variant"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "note": {
+          "default": "",
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "kind"
+      ],
+      "title": "Form",
+      "type": "object"
+    },
+    "Location": {
+      "additionalProperties": false,
+      "properties": {
+        "section": {
+          "title": "Section",
+          "type": "string"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        },
+        "printed_page": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Printed Page"
+        },
+        "manuscript_page": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Manuscript Page"
+        },
+        "precision": {
+          "enum": [
+            "page",
+            "section",
+            "quote"
+          ],
+          "title": "Precision",
+          "type": "string"
+        },
+        "note": {
+          "default": "",
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "section",
+        "url",
+        "precision"
+      ],
+      "title": "Location",
+      "type": "object"
+    },
+    "Manifest": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1",
+          "default": "1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "dataset_version": {
+          "title": "Dataset Version",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "languages": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Languages",
+          "type": "array"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "dataset_version",
+        "title",
+        "languages",
+        "description"
+      ],
+      "title": "Manifest",
+      "type": "object"
+    },
+    "Mention": {
+      "additionalProperties": false,
+      "properties": {
+        "entry_id": {
+          "title": "Entry Id",
+          "type": "string"
+        },
+        "sense_id": {
+          "title": "Sense Id",
+          "type": "string"
+        },
+        "start": {
+          "minimum": 0,
+          "title": "Start",
+          "type": "integer"
+        },
+        "end": {
+          "exclusiveMinimum": 0,
+          "title": "End",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "entry_id",
+        "sense_id",
+        "start",
+        "end"
+      ],
+      "title": "Mention",
+      "type": "object"
+    },
+    "MentionReference": {
+      "additionalProperties": false,
+      "properties": {
+        "passage_id": {
+          "title": "Passage Id",
+          "type": "string"
+        },
+        "mention_index": {
+          "minimum": 0,
+          "title": "Mention Index",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "passage_id",
+        "mention_index"
+      ],
+      "title": "MentionReference",
+      "type": "object"
+    },
+    "Passage": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "edition_id": {
+          "title": "Edition Id",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "location": {
+          "$ref": "#/$defs/Location"
+        },
+        "speaker": {
+          "title": "Speaker",
+          "type": "string"
+        },
+        "material": {
+          "default": "body",
+          "enum": [
+            "body",
+            "heading",
+            "editorial",
+            "quotation"
+          ],
+          "title": "Material",
+          "type": "string"
+        },
+        "mentions": {
+          "items": {
+            "$ref": "#/$defs/Mention"
+          },
+          "minItems": 1,
+          "title": "Mentions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "edition_id",
+        "text",
+        "location",
+        "speaker",
+        "mentions"
+      ],
+      "title": "Passage",
+      "type": "object"
+    },
+    "Profile": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "source_language": {
+          "title": "Source Language",
+          "type": "string"
+        },
+        "target_language": {
+          "title": "Target Language",
+          "type": "string"
+        },
+        "dataset_version": {
+          "title": "Dataset Version",
+          "type": "string"
+        },
+        "scope": {
+          "$ref": "#/$defs/Scope"
+        },
+        "selections": {
+          "items": {
+            "$ref": "#/$defs/Selection"
+          },
+          "title": "Selections",
+          "type": "array"
+        },
+        "note": {
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "source_language",
+        "target_language",
+        "dataset_version",
+        "selections",
+        "note"
+      ],
+      "title": "Profile",
+      "type": "object"
+    },
+    "Relation": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "related",
+            "distinct",
+            "broader",
+            "narrower",
+            "possible_equivalent"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "target_id": {
+          "title": "Target Id",
+          "type": "string"
+        },
+        "explanation": {
+          "title": "Explanation",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "status": {
+          "default": "draft",
+          "enum": [
+            "draft",
+            "reviewed"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "target_id",
+        "explanation",
+        "evidence_ids"
+      ],
+      "title": "Relation",
+      "type": "object"
+    },
+    "Scope": {
+      "additionalProperties": false,
+      "properties": {
+        "work_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Work Ids",
+          "type": "array"
+        },
+        "edition_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Edition Ids",
+          "type": "array"
+        },
+        "note": {
+          "default": "",
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "title": "Scope",
+      "type": "object"
+    },
+    "Selection": {
+      "additionalProperties": false,
+      "properties": {
+        "source_sense_id": {
+          "title": "Source Sense Id",
+          "type": "string"
+        },
+        "translation_id": {
+          "title": "Translation Id",
+          "type": "string"
+        },
+        "scope": {
+          "$ref": "#/$defs/Scope"
+        },
+        "note": {
+          "default": "",
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_sense_id",
+        "translation_id"
+      ],
+      "title": "Selection",
+      "type": "object"
+    },
+    "Sense": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "definition": {
+          "title": "Definition",
+          "type": "string"
+        },
+        "concept_id": {
+          "title": "Concept Id",
+          "type": "string"
+        },
+        "usage": {
+          "title": "Usage",
+          "type": "string"
+        },
+        "work_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Work Ids",
+          "type": "array"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "status": {
+          "default": "draft",
+          "enum": [
+            "draft",
+            "reviewed"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "definition",
+        "concept_id",
+        "usage"
+      ],
+      "title": "Sense",
+      "type": "object"
+    },
+    "Translation": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "source_sense_id": {
+          "title": "Source Sense Id",
+          "type": "string"
+        },
+        "target_sense_id": {
+          "title": "Target Sense Id",
+          "type": "string"
+        },
+        "scope": {
+          "$ref": "#/$defs/Scope"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "note": {
+          "title": "Note",
+          "type": "string"
+        },
+        "status": {
+          "default": "draft",
+          "enum": [
+            "draft",
+            "reviewed"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "source_sense_id",
+        "target_sense_id",
+        "scope",
+        "evidence_ids",
+        "note"
+      ],
+      "title": "Translation",
+      "type": "object"
+    },
+    "Work": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "author": {
+          "title": "Author",
+          "type": "string"
+        },
+        "written": {
+          "title": "Written",
+          "type": "string"
+        },
+        "original_language": {
+          "title": "Original Language",
+          "type": "string"
+        },
+        "note": {
+          "default": "",
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "author",
+        "written",
+        "original_language"
+      ],
+      "title": "Work",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "manifest": {
+      "$ref": "#/$defs/Manifest"
+    },
+    "works": {
+      "items": {
+        "$ref": "#/$defs/Work"
+      },
+      "title": "Works",
+      "type": "array"
+    },
+    "editions": {
+      "items": {
+        "$ref": "#/$defs/Edition"
+      },
+      "title": "Editions",
+      "type": "array"
+    },
+    "entries": {
+      "items": {
+        "$ref": "#/$defs/Entry"
+      },
+      "title": "Entries",
+      "type": "array"
+    },
+    "concepts": {
+      "items": {
+        "$ref": "#/$defs/Concept"
+      },
+      "title": "Concepts",
+      "type": "array"
+    },
+    "translations": {
+      "items": {
+        "$ref": "#/$defs/Translation"
+      },
+      "title": "Translations",
+      "type": "array"
+    },
+    "attestations": {
+      "items": {
+        "$ref": "#/$defs/Attestation"
+      },
+      "title": "Attestations",
+      "type": "array"
+    },
+    "profiles": {
+      "items": {
+        "$ref": "#/$defs/Profile"
+      },
+      "title": "Profiles",
+      "type": "array"
+    }
+  },
+  "required": [
+    "manifest",
+    "works",
+    "editions",
+    "entries",
+    "concepts",
+    "translations",
+    "attestations",
+    "profiles"
+  ],
+  "title": "Dataset",
+  "type": "object"
+}

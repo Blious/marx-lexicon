@@ -1,0 +1,197 @@
+- id: att-value
+  note: 《资本论》第一章关于共同社会实体的结晶与价值的短引文。
+  passages:
+  - id: passage-value-de
+    edition_id: edition-capital-de-mew23
+    text: Als Kristalle dieser ihnen gemeinschaftlichen Substanz sind sie Werte - Warenwerte.
+    location:
+      section: 第一章第一节
+      url: https://e-und-p.org/mlwerke.de/me/me23/me23_049.htm
+      printed_page: '52'
+      manuscript_page: null
+      precision: page
+      note: 短引文用于定位，HTML 排版空白已整理；未逐字比对纸本。
+    speaker: Karl Marx
+    material: body
+    mentions:
+    - entry_id: entry-de-wert
+      sense_id: sense-de-wert-value
+      start: 64
+      end: 69
+  - id: passage-value-zh-Hans
+    edition_id: edition-capital-zh-1972
+    text: 就是价值——商品价值。
+    location:
+      section: 第一章第一节
+      url: https://www.marxists.org/chinese/marx/capital/01.htm#1
+      printed_page: null
+      manuscript_page: null
+      precision: section
+      note: 短引文用于定位，HTML 排版空白已整理；未逐字比对纸本。
+    speaker: Karl Marx
+    material: body
+    mentions:
+    - entry_id: entry-zh-Hans-jiazhi
+      sense_id: sense-zh-Hans-jiazhi-value
+      start: 2
+      end: 4
+  - id: passage-value-en
+    edition_id: edition-capital-en-moore-aveling
+    text: crystals of this social substance, common to them all, they are – Values.
+    location:
+      section: Chapter 1, Section 1
+      url: https://www.marxists.org/archive/marx/works/1867-c1/ch01.htm#S1
+      printed_page: null
+      manuscript_page: null
+      precision: section
+      note: 短引文用于定位，HTML 排版空白已整理；未逐字比对纸本。
+    speaker: Karl Marx
+    material: body
+    mentions:
+    - entry_id: entry-en-value
+      sense_id: sense-en-value-value
+      start: 66
+      end: 72
+  alignments:
+  - passage_ids:
+    - passage-value-de
+    - passage-value-zh-Hans
+    - passage-value-en
+    level: passage
+    note: 依据各语种上下文整理的对应候选；术语标注分别定位，不宣称已完成人工词对齐审定。
+    status: candidate
+  external_refs: []
+  review_status: unreviewed
+- id: att-abstract-labour
+  note: 同章讨论各种具体劳动形式被抽去后的展开表达。
+  passages:
+  - id: passage-abstract-de
+    edition_id: edition-capital-de-mew23
+    text: abstrakt menschliche Arbeit.
+    location:
+      section: 第一章第一节
+      url: https://e-und-p.org/mlwerke.de/me/me23/me23_049.htm
+      printed_page: '52'
+      manuscript_page: null
+      precision: page
+      note: 短引文用于定位，HTML 排版空白已整理；未逐字比对纸本。
+    speaker: Karl Marx
+    material: body
+    mentions:
+    - entry_id: entry-de-abstrakte-arbeit
+      sense_id: sense-de-abstrakte-arbeit-abstract-labour
+      start: 0
+      end: 27
+  - id: passage-abstract-zh-Hans
+    edition_id: edition-capital-zh-1972
+    text: 抽象人类劳动。
+    location:
+      section: 第一章第一节
+      url: https://www.marxists.org/chinese/marx/capital/01.htm#1
+      printed_page: null
+      manuscript_page: null
+      precision: section
+      note: 短引文用于定位，HTML 排版空白已整理；未逐字比对纸本。
+    speaker: Karl Marx
+    material: body
+    mentions:
+    - entry_id: entry-zh-Hans-chouxiang-laodong
+      sense_id: sense-zh-Hans-chouxiang-laodong-abstract-labour
+      start: 0
+      end: 6
+  - id: passage-abstract-en
+    edition_id: edition-capital-en-moore-aveling
+    text: human labour in the abstract.
+    location:
+      section: Chapter 1, Section 1
+      url: https://www.marxists.org/archive/marx/works/1867-c1/ch01.htm#S1
+      printed_page: null
+      manuscript_page: null
+      precision: section
+      note: 短引文用于定位，HTML 排版空白已整理；未逐字比对纸本。
+    speaker: Karl Marx
+    material: body
+    mentions:
+    - entry_id: entry-en-abstract-labour
+      sense_id: sense-en-abstract-labour-abstract-labour
+      start: 0
+      end: 28
+  alignments:
+  - passage_ids:
+    - passage-abstract-de
+    - passage-abstract-zh-Hans
+    - passage-abstract-en
+    level: passage
+    note: 依据各语种上下文整理的对应候选；术语标注分别定位，不宣称已完成人工词对齐审定。
+    status: candidate
+  external_refs: []
+  review_status: unreviewed
+- id: att-labour-power
+  note: 劳动力定义句开头的短引文；英译章号与德中章号独立登记。
+  passages:
+  - id: passage-power-de
+    edition_id: edition-capital-de-mew23
+    text: Unter Arbeitskraft oder Arbeitsvermögen verstehen wir den Inbegriff der physischen und geistigen
+      Fähigkeiten
+    location:
+      section: 第四章第三节·劳动力的买和卖
+      url: https://e-und-p.org/mlwerke.de/me/me23/me23_161.htm
+      printed_page: '181'
+      manuscript_page: null
+      precision: page
+      note: 短引文用于定位，HTML 排版空白已整理；未逐字比对纸本。
+    speaker: Karl Marx
+    material: body
+    mentions:
+    - entry_id: entry-de-arbeitskraft
+      sense_id: sense-de-arbeitskraft-labour-power
+      start: 6
+      end: 18
+  - id: passage-power-zh-Hans
+    edition_id: edition-capital-zh-1972
+    text: 劳动力或劳动能力
+    location:
+      section: 第四章第三节·劳动力的买和卖
+      url: https://www.marxists.org/chinese/marx/capital/04.htm#3
+      printed_page: null
+      manuscript_page: null
+      precision: section
+      note: 短引文用于定位，HTML 排版空白已整理；未逐字比对纸本。
+    speaker: Karl Marx
+    material: body
+    mentions:
+    - entry_id: entry-zh-Hans-laodongli
+      sense_id: sense-zh-Hans-laodongli-labour-power
+      start: 0
+      end: 3
+  - id: passage-power-en
+    edition_id: edition-capital-en-moore-aveling
+    text: By labour-power or capacity for labour
+    location:
+      section: Chapter 6 · The Buying and Selling of Labour-Power
+      url: https://www.marxists.org/archive/marx/works/1867-c1/ch06.htm
+      printed_page: null
+      manuscript_page: null
+      precision: section
+      note: 短引文用于定位，HTML 排版空白已整理；未逐字比对纸本。
+    speaker: Karl Marx
+    material: body
+    mentions:
+    - entry_id: entry-en-labour-power
+      sense_id: sense-en-labour-power-labour-power
+      start: 3
+      end: 15
+    - entry_id: entry-en-capacity-for-labour
+      sense_id: sense-en-capacity-for-labour-labour-power
+      start: 19
+      end: 38
+  alignments:
+  - passage_ids:
+    - passage-power-de
+    - passage-power-zh-Hans
+    - passage-power-en
+    level: passage
+    note: 依据各语种上下文整理的对应候选；术语标注分别定位，不宣称已完成人工词对齐审定。
+    status: candidate
+  external_refs: []
+  review_status: unreviewed

@@ -1,0 +1,92 @@
+- id: concept-value
+  labels:
+    de: Wert
+    zh-Hans: 价值
+    en: value
+  definition: 《资本论》商品分析中所讨论的价值；本例聚焦劳动产品作为共同社会实体结晶的表述。
+  evidence_ids:
+  - att-value
+  relations:
+  - kind: related
+    target_id: concept-abstract-labour
+    explanation: 本章先讨论抽象人类劳动，再讨论劳动产品作为价值的规定。
+    evidence_ids:
+    - att-value
+    - att-abstract-labour
+    status: draft
+- id: concept-labour-power
+  labels:
+    de: Arbeitskraft
+    zh-Hans: 劳动力
+    en: labour-power
+  definition: 活的人所具有、在生产使用价值时运用的体力和智力能力。
+  evidence_ids:
+  - att-labour-power
+  relations: []
+- id: concept-abstract-labour
+  labels:
+    de: abstrakte Arbeit
+    zh-Hans: 抽象劳动
+    en: abstract labour
+  definition: 商品分析中不按各种具体劳动形式区别的人类劳动这一规定。
+  evidence_ids:
+  - att-abstract-labour
+  relations: []
+- id: concept-estrangement
+  labels:
+    de: Entfremdung
+    zh-Hans: 异化
+    en: estrangement
+  definition: 1844年手稿中用 Entfremdung 表述的异化关系；此条仅覆盖所引占有语境。
+  evidence_ids:
+  - att-alienation-pair
+  relations:
+  - kind: related
+    target_id: concept-externalization
+    explanation: 所引原句并列使用两词；本条只记录这一联系，不认定它们在所有作品中同义。
+    evidence_ids:
+    - att-alienation-pair
+    status: draft
+- id: concept-externalization
+  labels:
+    de: Entäußerung
+    zh-Hans: 外化
+    en: alienation
+  definition: 1844年手稿中用 Entäußerung 表述的外化；与 Entfremdung 的关系须逐处分析。
+  evidence_ids:
+  - att-alienation-pair
+  relations: []
+- id: concept-aufhebung-religion
+  labels:
+    de: Aufhebung
+    zh-Hans: 扬弃
+    en: annulment
+  definition: 黑格尔批判中讨论宗教和神学的扬弃这一用法；按所引英译本对应 annulment。
+  evidence_ids:
+  - att-aufhebung-religion
+  relations: []
+- id: concept-aufhebung-property
+  labels:
+    de: Aufhebung
+    zh-Hans: 扬弃
+    en: transcendence
+  definition: 共产主义讨论中私有财产和自我异化的积极扬弃这一用法。
+  evidence_ids:
+  - att-aufhebung-property
+  relations: []
+- id: concept-aufheben-dialectical
+  labels:
+    de: Aufheben
+    zh-Hans: 扬弃
+    en: superseding
+  definition: 讨论否定与保存、肯定相结合的扬弃活动；原词为名词化不定式 Aufheben。
+  evidence_ids:
+  - att-aufheben-dialectical
+  relations:
+  - kind: related
+    target_id: concept-aufhebung-religion
+    explanation: 两处属于同一黑格尔批判章节，但词条和语境分别保存。
+    evidence_ids:
+    - att-aufheben-dialectical
+    - att-aufhebung-religion
+    status: draft

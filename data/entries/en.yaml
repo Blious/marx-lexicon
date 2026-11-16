@@ -1,0 +1,159 @@
+- id: entry-en-value
+  language: en
+  lemma: value
+  part_of_speech: noun
+  forms:
+  - text: Values
+    kind: inflected
+    note: 所引英译本中的复数与大写。
+  senses:
+  - id: sense-en-value-value
+    definition: 《资本论》商品分析中所讨论的价值；本例聚焦劳动产品作为共同社会实体结晶的表述。
+    concept_id: concept-value
+    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    work_ids:
+    - work-capital-1
+    evidence_ids:
+    - att-value
+    status: draft
+  article: articles/wert.md
+- id: entry-en-labour-power
+  language: en
+  lemma: labour-power
+  part_of_speech: noun
+  forms:
+  - text: labour power
+    kind: variant
+    note: 连字符变体。
+  - text: labor-power
+    kind: variant
+    note: 美式拼写检索入口。
+  senses:
+  - id: sense-en-labour-power-labour-power
+    definition: 活的人所具有、在生产使用价值时运用的体力和智力能力。
+    concept_id: concept-labour-power
+    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    work_ids:
+    - work-capital-1
+    evidence_ids:
+    - att-labour-power
+    status: draft
+  article: articles/arbeitskraft.md
+- id: entry-en-capacity-for-labour
+  language: en
+  lemma: capacity for labour
+  part_of_speech: phrase
+  forms: []
+  senses:
+  - id: sense-en-capacity-for-labour-labour-power
+    definition: 活的人所具有、在生产使用价值时运用的体力和智力能力。
+    concept_id: concept-labour-power
+    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    work_ids:
+    - work-capital-1
+    evidence_ids:
+    - att-labour-power
+    status: draft
+  article: articles/arbeitskraft.md
+- id: entry-en-abstract-labour
+  language: en
+  lemma: abstract labour
+  part_of_speech: phrase
+  forms:
+  - text: human labour in the abstract
+    kind: variant
+    note: 所引英译本的展开表达。
+  - text: abstract labor
+    kind: variant
+    note: 美式拼写检索入口。
+  senses:
+  - id: sense-en-abstract-labour-abstract-labour
+    definition: 商品分析中不按各种具体劳动形式区别的人类劳动这一规定。
+    concept_id: concept-abstract-labour
+    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    work_ids:
+    - work-capital-1
+    evidence_ids:
+    - att-abstract-labour
+    status: draft
+  article: articles/abstrakte-arbeit.md
+- id: entry-en-estrangement
+  language: en
+  lemma: estrangement
+  part_of_speech: noun
+  forms: []
+  senses:
+  - id: sense-en-estrangement-estrangement
+    definition: 1844年手稿中用 Entfremdung 表述的异化关系；此条仅覆盖所引占有语境。
+    concept_id: concept-estrangement
+    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    work_ids:
+    - work-manuscripts-1844
+    evidence_ids:
+    - att-alienation-pair
+    status: draft
+  article: articles/entfremdung.md
+- id: entry-en-alienation
+  language: en
+  lemma: alienation
+  part_of_speech: noun
+  forms: []
+  senses:
+  - id: sense-en-alienation-externalization
+    definition: 1844年手稿中用 Entäußerung 表述的外化；与 Entfremdung 的关系须逐处分析。
+    concept_id: concept-externalization
+    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    work_ids:
+    - work-manuscripts-1844
+    evidence_ids:
+    - att-alienation-pair
+    status: draft
+  article: articles/entaeusserung.md
+- id: entry-en-annulment
+  language: en
+  lemma: annulment
+  part_of_speech: noun
+  forms: []
+  senses:
+  - id: sense-en-annulment-aufhebung-religion
+    definition: 黑格尔批判中讨论宗教和神学的扬弃这一用法；按所引英译本对应 annulment。
+    concept_id: concept-aufhebung-religion
+    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    work_ids:
+    - work-manuscripts-1844
+    evidence_ids:
+    - att-aufhebung-religion
+    status: draft
+  article: articles/aufhebung.md
+- id: entry-en-transcendence
+  language: en
+  lemma: transcendence
+  part_of_speech: noun
+  forms: []
+  senses:
+  - id: sense-en-transcendence-aufhebung-property
+    definition: 共产主义讨论中私有财产和自我异化的积极扬弃这一用法。
+    concept_id: concept-aufhebung-property
+    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    work_ids:
+    - work-manuscripts-1844
+    evidence_ids:
+    - att-aufhebung-property
+    status: draft
+  article: articles/aufhebung.md
+- id: entry-en-superseding
+  language: en
+  lemma: superseding
+  part_of_speech: noun
+  forms: []
+  senses:
+  - id: sense-en-superseding-aufheben-dialectical
+    definition: 讨论否定与保存、肯定相结合的扬弃活动；原词为名词化不定式 Aufheben。
+    concept_id: concept-aufheben-dialectical
+    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    work_ids:
+    - work-manuscripts-1844
+    evidence_ids:
+    - att-aufheben-dialectical
+    status: draft
+  article: articles/aufhebung.md

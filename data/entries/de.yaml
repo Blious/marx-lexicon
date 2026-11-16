@@ -1,0 +1,148 @@
+- id: entry-de-wert
+  language: de
+  lemma: Wert
+  part_of_speech: noun
+  forms:
+  - text: Werte
+    kind: inflected
+    note: 复数或特定屈折形式，按上下文判读。
+  - text: Werts
+    kind: inflected
+    note: 属格形式。
+  - text: Werth
+    kind: historical
+    note: 历史拼写检索入口；示例引文不据此改写。
+  senses:
+  - id: sense-de-wert-value
+    definition: 《资本论》商品分析中所讨论的价值；本例聚焦劳动产品作为共同社会实体结晶的表述。
+    concept_id: concept-value
+    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    work_ids:
+    - work-capital-1
+    evidence_ids:
+    - att-value
+    status: draft
+  article: articles/wert.md
+- id: entry-de-arbeitskraft
+  language: de
+  lemma: Arbeitskraft
+  part_of_speech: noun
+  forms:
+  - text: Arbeitskräfte
+    kind: inflected
+    note: 复数。
+  - text: Arbeitskräften
+    kind: inflected
+    note: 复数与格。
+  senses:
+  - id: sense-de-arbeitskraft-labour-power
+    definition: 活的人所具有、在生产使用价值时运用的体力和智力能力。
+    concept_id: concept-labour-power
+    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    work_ids:
+    - work-capital-1
+    evidence_ids:
+    - att-labour-power
+    status: draft
+  article: articles/arbeitskraft.md
+- id: entry-de-abstrakte-arbeit
+  language: de
+  lemma: abstrakte Arbeit
+  part_of_speech: phrase
+  forms:
+  - text: abstrakten Arbeit
+    kind: inflected
+    note: 形容词屈折。
+  - text: abstrakter Arbeit
+    kind: inflected
+    note: 形容词屈折。
+  - text: abstrakt menschliche Arbeit
+    kind: variant
+    note: 所引正文中的扩展表达；仅为本义项登记。
+  senses:
+  - id: sense-de-abstrakte-arbeit-abstract-labour
+    definition: 商品分析中不按各种具体劳动形式区别的人类劳动这一规定。
+    concept_id: concept-abstract-labour
+    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    work_ids:
+    - work-capital-1
+    evidence_ids:
+    - att-abstract-labour
+    status: draft
+  article: articles/abstrakte-arbeit.md
+- id: entry-de-entfremdung
+  language: de
+  lemma: Entfremdung
+  part_of_speech: noun
+  forms: []
+  senses:
+  - id: sense-de-entfremdung-estrangement
+    definition: 1844年手稿中用 Entfremdung 表述的异化关系；此条仅覆盖所引占有语境。
+    concept_id: concept-estrangement
+    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    work_ids:
+    - work-manuscripts-1844
+    evidence_ids:
+    - att-alienation-pair
+    status: draft
+  article: articles/entfremdung.md
+- id: entry-de-entaeusserung
+  language: de
+  lemma: Entäußerung
+  part_of_speech: noun
+  forms:
+  - text: Entäusserung
+    kind: variant
+    note: ss 拼写变体，保留原词不作全局替换。
+  senses:
+  - id: sense-de-entaeusserung-externalization
+    definition: 1844年手稿中用 Entäußerung 表述的外化；与 Entfremdung 的关系须逐处分析。
+    concept_id: concept-externalization
+    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    work_ids:
+    - work-manuscripts-1844
+    evidence_ids:
+    - att-alienation-pair
+    status: draft
+  article: articles/entaeusserung.md
+- id: entry-de-aufhebung
+  language: de
+  lemma: Aufhebung
+  part_of_speech: noun
+  forms: []
+  senses:
+  - id: sense-de-aufhebung-aufhebung-religion
+    definition: 黑格尔批判中讨论宗教和神学的扬弃这一用法；按所引英译本对应 annulment。
+    concept_id: concept-aufhebung-religion
+    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    work_ids:
+    - work-manuscripts-1844
+    evidence_ids:
+    - att-aufhebung-religion
+    status: draft
+  - id: sense-de-aufhebung-aufhebung-property
+    definition: 共产主义讨论中私有财产和自我异化的积极扬弃这一用法。
+    concept_id: concept-aufhebung-property
+    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    work_ids:
+    - work-manuscripts-1844
+    evidence_ids:
+    - att-aufhebung-property
+    status: draft
+  article: articles/aufhebung.md
+- id: entry-de-aufheben
+  language: de
+  lemma: Aufheben
+  part_of_speech: noun
+  forms: []
+  senses:
+  - id: sense-de-aufheben-aufheben-dialectical
+    definition: 讨论否定与保存、肯定相结合的扬弃活动；原词为名词化不定式 Aufheben。
+    concept_id: concept-aufheben-dialectical
+    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    work_ids:
+    - work-manuscripts-1844
+    evidence_ids:
+    - att-aufheben-dialectical
+    status: draft
+  article: articles/aufhebung.md

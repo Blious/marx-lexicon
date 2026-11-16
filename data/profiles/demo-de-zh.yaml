@@ -1,0 +1,40 @@
+- id: demo-de-zh
+  title: 德译中示例方案
+  source_language: de
+  target_language: zh-Hans
+  dataset_version: 0.1.0
+  scope: {}
+  selections:
+  - source_sense_id: sense-de-wert-value
+    translation_id: translation-value-zh-Hans
+    scope: {}
+    note: 本示例沿用所列译本用词；实际翻译须先判断义项。
+  - source_sense_id: sense-de-arbeitskraft-labour-power
+    translation_id: translation-labour-power-zh-Hans
+    scope: {}
+    note: 本示例沿用所列译本用词；实际翻译须先判断义项。
+  - source_sense_id: sense-de-abstrakte-arbeit-abstract-labour
+    translation_id: translation-abstract-labour-zh-Hans
+    scope: {}
+    note: 本示例沿用所列译本用词；实际翻译须先判断义项。
+  - source_sense_id: sense-de-entfremdung-estrangement
+    translation_id: translation-estrangement-zh-Hans
+    scope: {}
+    note: 本示例沿用所列译本用词；实际翻译须先判断义项。
+  - source_sense_id: sense-de-entaeusserung-externalization
+    translation_id: translation-externalization-zh-Hans
+    scope: {}
+    note: 本示例沿用所列译本用词；实际翻译须先判断义项。
+  - source_sense_id: sense-de-aufhebung-aufhebung-religion
+    translation_id: translation-aufhebung-religion-zh-Hans
+    scope: {}
+    note: 本示例沿用所列译本用词；实际翻译须先判断义项。
+  - source_sense_id: sense-de-aufhebung-aufhebung-property
+    translation_id: translation-aufhebung-property-zh-Hans
+    scope: {}
+    note: 本示例沿用所列译本用词；实际翻译须先判断义项。
+  - source_sense_id: sense-de-aufheben-aufheben-dialectical
+    translation_id: translation-aufheben-dialectical-zh-Hans
+    scope: {}
+    note: 本示例沿用所列译本用词；实际翻译须先判断义项。
+  note: 演示方案，以具体来源版本和义项为限；不是全部马克思著作的统一译名标准。
