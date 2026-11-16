@@ -2,6 +2,10 @@
 
 ## 启动
 
+Windows 快速启动：`./start-web.ps1`，同时运行 MCP 时使用 `./start-web.ps1 -WithMcp`。脚本可从任意工作目录调用，会检查依赖、重建当前仓库数据库，并在服务就绪后打开浏览器；服务在当前窗口运行，按 Ctrl+C 停止。参数：`-Port 8080`、`-NoBrowser`、`-Python <解释器路径>`、`-Install`（重新安装声明的依赖）。优先选择仓库 `.venv`，否则使用 PATH 中的 Python。首次缺少依赖时会执行 pip 安装；后续直接启动。此构建行为属于启动脚本，CLI 的只读 serve/MCP 命令仍不会隐式构建数据。
+
+以下为手动安装和启动方式：
+
 ```powershell
 python -m pip install -e ".[web,mcp,export]"
 python -m marx_lexicon build

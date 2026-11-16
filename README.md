@@ -61,6 +61,19 @@ python -X utf8 examples/compare_reference_size.py
 
 ## 本地网页、MCP 与标准导出
 
+Windows 下可在 PowerShell 中直接运行快速启动脚本：
+
+```powershell
+.\start-web.ps1
+# 同时开启 MCP，或指定端口且不自动打开浏览器
+.\start-web.ps1 -WithMcp
+.\start-web.ps1 -Port 8080 -NoBrowser
+```
+
+脚本自动定位仓库，优先使用 `.venv` 的 Python，否则使用 PATH 中的 `python`；缺少依赖时安装网页与导出依赖，启动前重建数据库，服务就绪后打开浏览器。按 `Ctrl+C` 停止。可用 `-Python <解释器路径>` 指定环境，`-Install` 按项目声明重新安装依赖。首次使用需要 Python 3.11+，安装缺少的依赖时需要联网。
+
+如果系统执行策略阻止脚本，可仅对本次进程使用 `powershell -ExecutionPolicy Bypass -File .\start-web.ps1`。手动安装与启动方式如下：
+
 ```powershell
 python -m pip install -e ".[web,mcp,export]"
 python -m marx_lexicon serve --with-mcp
