@@ -97,6 +97,7 @@ def tbx_content(lexicon, glossary=None):
                 node(term, "termNote", entry.part_of_speech if entry.part_of_speech != "phrase" else "other",
                      type="partOfSpeech")
                 node(term, "note", "词条与义项：" + compact({"entry_id": entry.id,
+                     "part_of_speech": entry.part_of_speech,
                      "forms": [f.model_dump(mode="json") for f in entry.forms], **sense.model_dump(mode="json")}))
                 node(term, "admin", compact(lexicon.evidence_bundle(sense.evidence_ids)), type="source")
     ET.indent(root)

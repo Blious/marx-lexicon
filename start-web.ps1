@@ -4,6 +4,7 @@ param(
     [int]$Port = 8000,
     [string]$Python,
     [switch]$WithMcp,
+    [switch]$ReadOnly,
     [switch]$NoBrowser,
     [switch]$Install
 )
@@ -27,6 +28,10 @@ Push-Location -LiteralPath $PSScriptRoot
 try {
     $modules = 'marx_lexicon,fastapi,uvicorn,jinja2,markdown_it,rdflib'
     $extras = 'web,export'
+    if (-not $ReadOnly) {
+        $modules += ',filelock'
+        $extras += ',edit'
+    }
     if ($WithMcp) {
         $modules += ',mcp'
         $extras += ',mcp'
@@ -37,7 +42,7 @@ try {
         Invoke-ProjectPython -m pip install -e "${PSScriptRoot}[$extras]"
     }
 
-    # Rebuild from the current YAML and articles before starting the read-only server.
+    # Rebuild from the current YAML and articles before starting the local server.
     Invoke-ProjectPython -m marx_lexicon --root $PSScriptRoot build
     $url = "http://127.0.0.1:$Port/"
     Write-Host "Web: $url"
@@ -63,6 +68,7 @@ try {
     $serverArgs = @('-m', 'marx_lexicon', '--root', $PSScriptRoot,
                     'serve', '--host', '127.0.0.1', '--port', "$Port")
     if ($WithMcp) { $serverArgs += '--with-mcp' }
+    if (-not $ReadOnly) { $serverArgs += '--edit' }
     Invoke-ProjectPython @serverArgs
 }
 finally {

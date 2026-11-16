@@ -71,15 +71,19 @@ def highlighted(text, mentions):
     return Markup("".join(parts))
 
 
-def create_app(database: Path, with_mcp=False):
+def create_app(database: Path, with_mcp=False, *, root: Path | None = None, edit=False):
     # 启动时仅验证数据库可读；各请求有自己的连接。
     with Lexicon(database):
         pass
+    editor = None
+    if edit:
+        from .editing import Editor
+        editor = Editor(root or Path.cwd(), database)
     mcp = None
     mcp_app = None
     if with_mcp:
         from .mcp_server import create_mcp
-        mcp = create_mcp(database)
+        mcp = create_mcp(database, editor=editor)
         mcp_app = mcp.streamable_http_app(json_response=True)
 
     @asynccontextmanager
@@ -102,7 +106,7 @@ def create_app(database: Path, with_mcp=False):
 
     def page(request, template, lexicon, **context):
         return templates.TemplateResponse(request=request, name=template,
-            context={"meta": lexicon.get_metadata(), **context})
+            context={"meta": lexicon.get_metadata(), "editing": edit, **context})
 
     for exception in (KeyError, ValueError, VersionMismatch):
         async def error_response(request: Request, error: Exception):
@@ -198,6 +202,13 @@ def create_app(database: Path, with_mcp=False):
         filename = result.filename + ".report.json" if report else result.filename
         return Response(content, media_type="application/json" if report else result.media_type,
                         headers={"Content-Disposition": "attachment; filename*=UTF-8''" + quote(filename)})
+
+    if editor:
+        from .web_editing import mount_editor
+        def editor_metadata():
+            with Lexicon(database) as lexicon:
+                return lexicon.get_metadata()
+        mount_editor(app, editor, templates, editor_metadata)
 
     if mcp_app:
         # SDK 应用自带 /mcp 路由，挂载到根并排在网页路由之后。

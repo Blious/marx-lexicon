@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}资料管理 · 马克思多语术语库{% endblock %}
+{% block content %}
+<script src="/static/editing.js" defer></script>
+<div class="intro"><span class="eyebrow">规范源文件 · 整批校验 · 本地保存</span><h1>资料管理</h1><p>保存仅修改本地文件，之后可手动提交推送。不完整资料可存入独立的编辑草稿；草稿不参与查阅、翻译参考或正式导出。</p></div>
+<div class="notice"><span id="editing-status" role="status">正在读取编辑版本…</span></div>
+<p>词条中的“工作稿”是已登记资料的学术整理状态，与下方未发布的“编辑草稿”分别管理。</p>
+<div class="editor-layout">
+<section aria-label="资源目录"><h2>资源目录</h2><label>类别<select id="resource-kind"><option value="entries">词条</option><option value="concepts">概念</option><option value="translations">有方向译法</option><option value="attestations">证据与对应</option><option value="works">作品</option><option value="editions">版本</option><option value="profiles">项目方案</option><option value="articles">辨析文章</option><option value="drafts">编辑草稿</option><option value="import_notes">导入注记（只读）</option></select></label>
+<div class="actions"><button id="new-record" type="button">新增资源</button><button id="reload-records" type="button" class="secondary">刷新目录与版本</button></div>
+<label><input id="select-page" type="checkbox"> 勾选当前页</label><div id="record-list" class="record-list"></div>
+<nav class="pagination" aria-label="资源分页"><button id="records-prev" type="button" class="secondary">上一页</button><span id="records-page"></span><button id="records-next" type="button" class="secondary">下一页</button></nav>
+<div class="actions"><button id="bulk-delete" type="button" class="secondary">所选加入删除批次</button><button id="bulk-patch" type="button" class="secondary">批量修改字段</button></div>
+<div id="patch-panel" hidden><label>修改字段<select id="patch-field"></select></label><div id="patch-value"></div><button id="queue-patch" type="button">将字段修改加入批次</button></div>
+</section>
+<section aria-label="编辑资源"><h2 id="record-heading">编辑资源</h2><p class="muted">字段按模型展示；数组保存时整体替换。可先加入批次，再新增相关概念或证据，最后一起保存。</p>
+<form id="record-form" hidden><div id="record-fields"></div><div class="actions"><button id="save-record" type="submit">保存此资源</button><button id="queue-record" type="button" class="secondary">加入批次</button><button id="record-references" type="button" class="secondary">删除引用检查</button><button id="review-record" type="button" class="secondary">明确标为已审阅</button></div></form>
+<div id="article-preview"></div>
+</section></div>
+<section class="sense"><div class="section-heading"><h2>当前编辑批次</h2><button id="clear-batch" type="button" class="secondary">清空批次</button></div><div id="batch-list"></div>
+<label>编辑说明 / 草稿标题<input id="batch-title" value="更新术语资料"></label>
+<div class="actions"><button id="preview-batch" type="button" class="secondary">预览与校验</button><button id="apply-batch" type="button">保存整批资料</button><button id="save-draft" type="button" class="secondary">保存为编辑草稿</button><button id="publish-draft" type="button" class="secondary" hidden>发布当前草稿</button><button id="delete-draft" type="button" class="secondary" hidden>删除当前草稿</button></div></section>
+<section class="sense"><h2>批量导入</h2><p>选择文件或粘贴正文。默认只新增；更新和按 ID 新增或更新须明确选择。缺失记录不删除，同名术语不自动合并。</p>
+<div class="filters"><label>格式<select id="import-format"><option value="json">JSON</option><option value="yaml">YAML</option><option value="csv">CSV（含 UTF-8 BOM）</option><option value="tbx">TBX v3 Basic DCA</option></select></label><label>导入模式<select id="import-mode"><option value="create">只新增</option><option value="update">只更新</option><option value="upsert">按 ID 新增或更新</option></select></label></div>
+<label>文件<input id="import-file" type="file" accept=".json,.yaml,.yml,.csv,.tbx,.xml"></label><label>文件正文<textarea id="import-content" rows="7" spellcheck="false"></textarea></label>
+<details><summary>CSV 列映射</summary><p>使用 JSON 对象指定“模型字段: 文件列名”，例如 {"lemma":"原词","language":"语言","entry_id":"词条ID","definition":"定义","concept_id":"概念ID"}。原生导出留空即可。</p><textarea id="import-columns" rows="3" aria-label="CSV 列映射" spellcheck="false">{}</textarea></details>
+<div class="actions"><button id="preview-import" type="button" class="secondary">预览导入</button><button id="draft-import" type="button" class="secondary">导入编辑草稿</button><button id="apply-import" type="button">校验并发布导入</button></div></section>
+<section id="edit-result" class="notice" role="status" tabindex="-1" aria-live="polite"><h2>操作结果</h2><p>请选择或新增一个资源。</p></section>
+{% endblock %}

@@ -68,15 +68,19 @@ Windows 下可在 PowerShell 中直接运行快速启动脚本：
 # 同时开启 MCP，或指定端口且不自动打开浏览器
 .\start-web.ps1 -WithMcp
 .\start-web.ps1 -Port 8080 -NoBrowser
+# 仅查阅，关闭网页和 MCP 编辑入口
+.\start-web.ps1 -ReadOnly
 ```
 
-脚本自动定位仓库，优先使用 `.venv` 的 Python，否则使用 PATH 中的 `python`；缺少依赖时安装网页与导出依赖，启动前重建数据库，服务就绪后打开浏览器。按 `Ctrl+C` 停止。可用 `-Python <解释器路径>` 指定环境，`-Install` 按项目声明重新安装依赖。首次使用需要 Python 3.11+，安装缺少的依赖时需要联网。
+脚本自动定位仓库，优先使用 `.venv` 的 Python，否则使用 PATH 中的 `python`；缺少依赖时安装网页、导出和编辑依赖，启动前重建数据库，服务就绪后打开浏览器。默认启用本地资料管理；`-ReadOnly` 关闭编辑，`-WithMcp` 的 MCP 与网页使用相同读写模式。按 `Ctrl+C` 停止。可用 `-Python <解释器路径>` 指定环境，`-Install` 按项目声明重新安装依赖。首次使用需要 Python 3.11+，安装缺少的依赖时需要联网。
 
 如果系统执行策略阻止脚本，可仅对本次进程使用 `powershell -ExecutionPolicy Bypass -File .\start-web.ps1`。手动安装与启动方式如下：
 
 ```powershell
-python -m pip install -e ".[web,mcp,export]"
+python -m pip install -e ".[web,mcp,export,edit]"
 python -m marx_lexicon serve --with-mcp
+# 手动启动命令默认只读，增加 --edit 开启编辑
+python -m marx_lexicon serve --with-mcp --edit
 ```
 
 网页为 `http://127.0.0.1:8000/`，MCP 为 `http://127.0.0.1:8000/mcp`。网页提供检索筛选、义项辨析、版本对照、段落术语参考与下载；不生成整段译文。省略 `--with-mcp` 可只运行网页。
@@ -92,7 +96,9 @@ python -m marx_lexicon export-glossary --profile demo-de-en --format csv --outpu
 
 全库支持 JSON、Markdown、CSV、TBX-Basic DCA 和 SKOS Turtle；项目表支持前四种。文件旁同时保存 `.report.json`，说明映射与信息损失；仅全库 JSON 是含全部文章的完整语义快照。详见[网页／HTTP／MCP 使用说明](docs/interfaces.md)和[导出约定](docs/exports.md)。
 
-运行全部测试前安装 `python -m pip install -e ".[web,mcp,export,dev]"`。标准校验资源已固定，安装依赖后测试无需在线读取来源。
+资料管理支持词条、义项、概念、译法、证据、作品、版本、方案和文章的新增、修改、删除、批量编辑，以及 JSON／YAML／CSV／TBX 导入。删除会列出引用，须在同一批次修复；不完整资料可保存为独立编辑草稿。所有资料保存仅写入本地，不自动提交或推送 Git。操作与 MCP 写入说明见[本地编辑指南](docs/editing.md)。
+
+运行全部测试前安装 `python -m pip install -e ".[web,mcp,export,edit,dev]"`。标准校验资源已固定，安装依赖后测试无需在线读取来源。
 
 ## 目录与维护
 
@@ -104,6 +110,7 @@ python -m marx_lexicon export-glossary --profile demo-de-en --format csv --outpu
 | `data/sources/` | 作品和具体出版／数字文本版本 |
 | `data/attestations/` | 短语例、术语位置和对应候选 |
 | `data/profiles/` | 固定数据版本的项目翻译方案 |
+| `data/drafts/` | 未发布的独立编辑草稿，首次保存时建立 |
 | `articles/` | 中文辨析文章 |
 | `schemas/` | 由 Python 模型导出的 JSON Schema |
 | `src/marx_lexicon/` | 模型、构建、查询和命令行 |
@@ -115,4 +122,4 @@ python -m marx_lexicon export-glossary --profile demo-de-en --format csv --outpu
 
 每次完成更改后都必须提交并推送到远端，具体流程见[本地开发文档](docs/development.md)。
 
-详见[架构方案](docs/architecture.md)、[数据模型与编辑约定](docs/data-model.md)、[AI 翻译参考](docs/ai-translation.md)和[示例说明](examples/README.md)。程序 0.2.0 已提供本地网页、HTTP、MCP 及标准导出；数据版本仍为 0.1.1，学术审阅状态不因新增接口而改变。
+详见[架构方案](docs/architecture.md)、[数据模型与编辑约定](docs/data-model.md)、[AI 翻译参考](docs/ai-translation.md)和[示例说明](examples/README.md)。程序 0.3.0 提供本地网页与 MCP 编辑、导入和草稿；本次接口升级保留数据版本 0.1.1，学术审阅状态不因新增接口而改变。

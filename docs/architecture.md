@@ -23,7 +23,9 @@ flowchart TB
     S --> E[JSON / Markdown / CSV / TBX / SKOS]
 ```
 
-YAML 和 Markdown 是编辑来源。SQLite 保存完整结构化快照、文章内容和索引，可独立查询并随时重建。编辑变更经构建才进入查询结果，网页编辑如在未来引入，也应进入同一编辑流程。
+YAML 和 Markdown 是编辑来源。SQLite 保存完整结构化快照、文章内容和索引，可独立查询并随时重建。`Editor` 将网页和 MCP 写入统一为批次：在内存中应用全部操作，校验完整 Dataset 与引用后写回涉及的源文件并重建 SQLite。新增记录集中于各类别的 `managed.yaml`，已有记录保留原文件位置。资料只在本地保存，Git 由使用者手动提交推送。
+
+编辑草稿位于 `data/drafts/`，保存尚未完成的操作和导入说明，不进入 Dataset、翻译参考或正式导出。`data/editor-state.yaml` 保存编辑版本，用于阻止陈旧请求覆盖新修改；正式发布另行递增数据补丁版本并更新所有方案的版本固定值。跨进程文件锁串行化保存；`build/editor/transaction.json` 只暂存当前事务涉及文件的旧内容，用于失败回滚或中断恢复，完成后删除，不建立长期备份。
 
 本阶段使用 Python 3.11+、Pydantic 2、PyYAML 和标准库 SQLite／argparse。JSON Schema 从 Pydantic 定义导出。服务逻辑不依赖命令行，也不依赖外部文献服务在线；网页与 MCP 直接调用该模块；可选依赖组保持基础 CLI 安装简洁。
 
@@ -75,6 +77,6 @@ erDiagram
 - MEGA² 外部证据通过 provider、evidence ID 和 version 登记。本轮没有运行期网络适配器，不搬运整部文献库。
 - 网页已提供查词、义项辨析、版本对照、概念、来源目录和段落参考；HTTP／MCP 复用业务模块，保持人工与程序结果一致。使用说明见 [网页与 MCP](interfaces.md)。
 - TBX-Basic DCA 用于术语交换，SKOS Turtle 用于概念组织；[导出约定](exports.md)明确字段映射与信息损失。当前 JSON Schema 是本项目格式，不宣称符合 TBX 或完整实现 OntoLex。
-- 如多人同时编辑成为实际需要，再引入编辑服务和数据库写入机制，届时明确唯一编辑来源及迁移方式。
+- 本地编辑服务按需启用，不增加远程账户或部署；独立 SQLite 快照保持只读。编辑模型与正式学术数据模型分开，详情见[编辑指南](editing.md)。
 
 建模参考：[OntoLex-lemon](https://www.w3.org/2016/05/ontolex/) 关于词条、词形和义项的区分；[TBX](https://www.tbxinfo.net/) 关于术语交换；[SKOS](https://www.w3.org/TR/skos-reference/) 关于概念组织。OntoLex-lemon 所引文件为社区规范，SKOS 为 W3C Recommendation。

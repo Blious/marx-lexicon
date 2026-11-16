@@ -75,7 +75,7 @@ def load_dataset(root: Path) -> Dataset:
     return dataset
 
 
-def validate_links(dataset: Dataset, root: Path, origins: dict[str, str]):
+def validate_links(dataset: Dataset, root: Path, origins: dict[str, str], articles: set[str] | None = None):
     errors = []
     all_ids = set()
 
@@ -98,7 +98,7 @@ def validate_links(dataset: Dataset, root: Path, origins: dict[str, str]):
         for sense in entry.senses:
             register(sense.id, entry.id)
             senses[sense.id] = (entry, sense)
-        if entry.article and not (root / entry.article).is_file():
+        if entry.article and not (entry.article in articles if articles is not None else (root / entry.article).is_file()):
             fail(entry.id, "article", f"文件不存在：{entry.article}")
         if entry.language not in dataset.manifest.languages:
             fail(entry.id, "language", "不在 dataset.languages 中")

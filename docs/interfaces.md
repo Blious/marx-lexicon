@@ -4,6 +4,8 @@
 
 Windows 快速启动：`./start-web.ps1`，同时运行 MCP 时使用 `./start-web.ps1 -WithMcp`。脚本可从任意工作目录调用，会检查依赖、重建当前仓库数据库，并在服务就绪后打开浏览器；服务在当前窗口运行，按 Ctrl+C 停止。参数：`-Port 8080`、`-NoBrowser`、`-Python <解释器路径>`、`-Install`（重新安装声明的依赖）。优先选择仓库 `.venv`，否则使用 PATH 中的 Python。首次缺少依赖时会执行 pip 安装；后续直接启动。此构建行为属于启动脚本，CLI 的只读 serve/MCP 命令仍不会隐式构建数据。
 
+脚本默认启用本地编辑，`-ReadOnly` 关闭网页与 MCP 写入。手动启动的 `serve`／`mcp` 默认只读，增加 `--edit` 开启；需要 `edit` 可选依赖和本地规范源文件，编辑模式仅监听回环地址。保存仅修改本地文件，不自动提交或推送。网页管理入口为 `/manage`，详见[编辑指南](editing.md)。
+
 以下为手动安装和启动方式：
 
 ```powershell
@@ -21,9 +23,9 @@ python -m marx_lexicon mcp --transport stdio
 python -m marx_lexicon mcp --transport streamable-http --port 8001
 ```
 
-独立 HTTP MCP 位于 `http://127.0.0.1:8001/mcp`。服务默认仅监听本机，`--host`、`--port` 可指定地址。本轮没有在线部署、账户、访问控制或在线编辑。示例见 [stdio 配置](../examples/mcp-stdio.json) 与 [HTTP 配置](../examples/mcp-http.json)，按客户端格式填写；stdio 的 command 建议使用安装本项目的 Python 解释器绝对路径。不会自动修改客户端配置。
+独立 HTTP MCP 位于 `http://127.0.0.1:8001/mcp`。服务默认仅监听本机，`--host`、`--port` 可指定地址。没有在线部署、账户或云端编辑。示例见 [stdio 配置](../examples/mcp-stdio.json) 与 [HTTP 配置](../examples/mcp-http.json)，按客户端格式填写；stdio 的 command 建议使用安装本项目的 Python 解释器绝对路径。写入配置见 [编辑 MCP 配置](../examples/mcp-edit-stdio.json)。不会自动修改客户端配置。
 
-从其他目录启动，把 `--root E:/Github/marx-lexicon` 放在子命令前，或用 `--database <绝对路径>` 查询独立快照。数据库缺失时提示构建，不自动修改数据。编辑仍使用 YAML／Markdown，`build` 后各请求读取当前数据库；请求结束即关闭连接，不跨工作线程共享连接。
+从其他目录启动，把 `--root E:/Github/marx-lexicon` 放在子命令前，或用 `--database <绝对路径>` 查询独立快照。数据库缺失时提示构建，不自动修改数据。手工修改 YAML／Markdown 后执行 `build`；编辑服务正式保存时自动重建。各请求读取当前数据库，结束即关闭连接，不跨工作线程共享连接。
 
 ## MCP 工具
 
@@ -38,7 +40,7 @@ python -m marx_lexicon mcp --transport streamable-http --port 8001
 | prepare_translation | text、source_language、target_language、profile_id；可选 work_id、edition_id、sense_id、detail |
 | export_glossary | profile_id；按需读取项目术语表和证据 |
 
-全部工具只读，不访问外部网络。每次输出一份无缩进 JSON 文本，不在 structured_content 再复制。元数据不夹带全库正文。段落参考默认沿用 [translation-brief/1](ai-translation.md)，完整引文按需展开；`detail=full` 显式取得完整参考。批量交换文件使用 CLI 或网页下载。
+默认只注册以上只读工具，不访问外部网络。`--edit` 额外提供按需模型、源记录、批次预览／保存、导入和草稿工具，列表见[编辑指南](editing.md)。每次输出一份无缩进 JSON 文本，不在 structured_content 再复制。元数据不夹带全库正文。段落参考默认沿用 [translation-brief/1](ai-translation.md)，完整引文按需展开；`detail=full` 显式取得完整参考。批量交换文件使用 CLI 或网页下载。
 
 先调用 get_metadata 确认范围和方案；再按段调用 prepare_translation；需核对时按原包的证据 ID、语言及数据版本调用 read_evidence。候选不等于审定，未命中不表示不存在术语。分页只用于交互检索，翻译参考不按 Top-K 丢弃适用候选。
 

@@ -11,7 +11,7 @@ from .exporting import compact
 from .service import Lexicon
 
 
-def create_mcp(database: Path):
+def create_mcp(database: Path, *, editor=None):
     server = MCPServer("marx-lexicon", version=__version__, instructions=(
         "先读 get_metadata 确认范围和方案。prepare_translation 默认精简；按证据 ID、语言和数据版本"
         "调用 read_evidence 展开。候选与项目选择不代表学术审定；未命中不代表不存在术语。"))
@@ -74,4 +74,7 @@ def create_mcp(database: Path):
         """按需读取项目术语表，含备选、适用范围与证据。"""
         return call("export_glossary", profile_id)
 
+    if editor:
+        from .mcp_editing import add_edit_tools
+        add_edit_tools(server, editor)
     return server

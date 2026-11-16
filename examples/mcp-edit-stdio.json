@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "marx-lexicon-edit": {
+      "command": "E:/Github/marx-lexicon/.venv/Scripts/python.exe",
+      "args": ["-m", "marx_lexicon", "--root", "E:/Github/marx-lexicon", "mcp", "--transport", "stdio", "--edit"]
+    }
+  }
+}

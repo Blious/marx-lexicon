@@ -22,6 +22,7 @@ def parser():
         command = commands.add_parser(name, help="启动网页" if name == "serve" else "启动只读 MCP")
         command.add_argument("--host", default="127.0.0.1")
         command.add_argument("--port", type=int, default=8000 if name == "serve" else 8001)
+        command.add_argument("--edit", action="store_true", help="启用本地源文件编辑，保存后手动提交推送")
         if name == "serve":
             command.add_argument("--with-mcp", action="store_true")
         else:
@@ -73,15 +74,21 @@ def main(argv=None):
     try:
         database = args.database or root / "build/lexicon.sqlite"
         if args.command in ("serve", "mcp"):
+            if args.edit and args.host not in ("127.0.0.1", "localhost", "::1"):
+                raise ValueError("编辑服务仅支持监听本机回环地址")
             with Lexicon(database):
                 pass
             if args.command == "serve":
                 import uvicorn
                 from .web import create_app
-                uvicorn.run(create_app(database, args.with_mcp), host=args.host, port=args.port)
+                uvicorn.run(create_app(database, args.with_mcp, root=root, edit=args.edit), host=args.host, port=args.port)
             else:
                 from .mcp_server import create_mcp
-                server = create_mcp(database)
+                editor = None
+                if args.edit:
+                    from .editing import Editor
+                    editor = Editor(root, database)
+                server = create_mcp(database, editor=editor)
                 server.run(transport=args.transport, **({"host": args.host, "port": args.port,
                            "json_response": True} if args.transport == "streamable-http" else {}))
             return 0
@@ -105,6 +112,9 @@ def main(argv=None):
                       "schema_version": dataset.manifest.schema_version,
                       "entries": len(dataset.entries), "attestations": len(dataset.attestations)}
         elif args.command == "build":
+            if (root / "build/editor/transaction.json").exists():
+                from .editing import Editor
+                Editor(root, args.output or root / "build/lexicon.sqlite")
             result = build_database(root, args.output or root / "build/lexicon.sqlite")
         elif args.command == "export-schema":
             result = Dataset.model_json_schema()
@@ -142,5 +152,5 @@ def main(argv=None):
         print(f"错误：{error}", file=sys.stderr)
         return 1
     except ModuleNotFoundError as error:
-        print(f"缺少可选依赖 {error.name}，请运行 python -m pip install -e \".[web,mcp,export]\"", file=sys.stderr)
+        print(f"缺少可选依赖 {error.name}，请运行 python -m pip install -e \".[web,mcp,export,edit]\"", file=sys.stderr)
         return 1

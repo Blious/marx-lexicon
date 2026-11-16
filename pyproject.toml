@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "marx-lexicon"
-version = "0.2.0"
+version = "0.3.0"
 description = "以原文证据为基础的多语马克思术语库"
 requires-python = ">=3.11"
 dependencies = ["pydantic>=2.12,<3", "PyYAML>=6,<7"]
@@ -14,6 +14,7 @@ dev = ["pytest>=8,<10", "httpx>=0.28,<1", "lxml>=6,<7", "saxonche>=12,<14"]
 web = ["fastapi>=0.115,<1", "uvicorn>=0.34,<1", "Jinja2>=3.1,<4", "markdown-it-py>=3,<5"]
 mcp = ["mcp>=2.3,<3"]
 export = ["rdflib>=7,<8"]
+edit = ["filelock>=3.16,<4"]
 
 [project.scripts]
 marx-lexicon = "marx_lexicon.cli:main"
