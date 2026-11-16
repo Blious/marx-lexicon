@@ -110,6 +110,7 @@ def main(argv=None):
             dataset = load_dataset(root)
             result = {"status": "valid", "dataset_version": dataset.manifest.dataset_version,
                       "schema_version": dataset.manifest.schema_version,
+                      "terms": len(dataset.terms),
                       "entries": len(dataset.entries), "attestations": len(dataset.attestations)}
         elif args.command == "build":
             if (root / "build/editor/transaction.json").exists():

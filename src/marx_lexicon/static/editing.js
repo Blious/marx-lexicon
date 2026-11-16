@@ -84,7 +84,7 @@
     const sequence=++loadSequence;$('record-list').replaceChildren(node('p','正在读取…'));$('new-record').disabled=true;
     const result=await api('records?'+new URLSearchParams({kind,offset,limit:20}));if(sequence!==loadSequence)return;
     const meta=await fetch('/api/metadata').then(response=>response.json());if(sequence!==loadSequence)return;
-    $('dataset-summary').textContent=`数据 ${meta.dataset_version} · 模型 ${meta.schema_version} · ${meta.counts.entries} 个词条 / ${meta.counts.concepts} 个概念`;
+    $('dataset-summary').textContent=`数据 ${meta.dataset_version} · 模型 ${meta.schema_version} · ${meta.counts.terms} 个术语 / ${meta.counts.entries} 个语言词条 / ${meta.counts.concepts} 个概念`;
     $('dataset-review-summary').textContent=`语例：${meta.review_counts.unreviewed} 组待审阅，${meta.review_counts.reviewed} 组已审阅。项目选用与学术审定分别记录。`;
     status(result);total=result.total;
     $('record-list').replaceChildren();$('select-page').checked=false;

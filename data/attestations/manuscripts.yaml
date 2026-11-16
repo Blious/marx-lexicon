@@ -203,7 +203,7 @@
   external_refs: []
   review_status: unreviewed
 - id: att-aufheben-dialectical
-  note: 附属词条 Aufheben 为名词化不定式，与 Aufhebung 分别建条；此处明确讨论否定与保存。
+  note: 独立词条 Aufheben 为名词化不定式，与 Aufhebung 分别建条；此处明确讨论否定与保存。
   passages:
   - id: passage-dialectical-de
     edition_id: edition-manuscripts-de-mew

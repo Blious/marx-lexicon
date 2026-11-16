@@ -1,0 +1,35 @@
+- id: term-value
+  title: 价值
+  summary: 商品分析中的价值及其德中英表达。
+  concept_ids: [concept-value]
+  article: articles/wert.md
+- id: term-labour-power
+  title: 劳动力
+  summary: 劳动能力的多语言表达，保留不同英语用语与版本证据。
+  concept_ids: [concept-labour-power]
+  article: articles/arbeitskraft.md
+- id: term-abstract-labour
+  title: 抽象劳动
+  summary: 商品分析中抽象人类劳动的表达与译法。
+  concept_ids: [concept-abstract-labour]
+  article: articles/abstrakte-arbeit.md
+- id: term-estrangement
+  title: 异化
+  summary: Entfremdung 的语境、表达与译本证据。
+  concept_ids: [concept-estrangement]
+  article: articles/entfremdung.md
+- id: term-externalization
+  title: 外化
+  summary: Entäußerung 的语境、表达及其与异化的辨析。
+  concept_ids: [concept-externalization]
+  article: articles/entaeusserung.md
+- id: term-aufhebung
+  title: 扬弃 · Aufhebung
+  summary: 宗教与私有财产两个语境分别保存义项和适用译法。
+  concept_ids: [concept-aufhebung-religion, concept-aufhebung-property]
+  article: articles/aufhebung.md
+- id: term-aufheben
+  title: 扬弃活动 · Aufheben
+  summary: 否定与保存、肯定相结合的活动；与 Aufhebung 关联查阅。
+  concept_ids: [concept-aufheben-dialectical]
+  article: articles/aufhebung.md

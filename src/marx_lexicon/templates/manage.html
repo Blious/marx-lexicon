@@ -2,11 +2,11 @@
 {% block title %}资料管理 · 马克思多语术语库{% endblock %}
 {% block content %}
 <script src="/static/editing.js" defer></script>
-<div class="intro"><span class="eyebrow">规范源文件 · 整批校验 · 本地保存</span><h1>资料管理</h1><p>保存仅修改本地文件，之后可手动提交推送。不完整资料可存入独立的编辑草稿；草稿不参与查阅、翻译参考或正式导出。</p></div>
+<div class="intro"><span class="eyebrow">规范源文件 · 整批校验 · 本地保存</span><h1>高级资源管理</h1><p><a href="/manage">返回术语整体编辑 →</a></p><p>保存仅修改本地文件，之后可手动提交推送。不完整资料可存入独立的编辑草稿；草稿不参与查阅、翻译参考或正式导出。</p></div>
 <div class="notice"><span id="editing-status" role="status">正在读取编辑版本…</span></div>
 <p>词条中的“工作稿”是已登记资料的学术整理状态，与下方未发布的“编辑草稿”分别管理。</p>
 <div class="editor-layout">
-<section aria-label="资源目录"><h2>资源目录</h2><label>类别<select id="resource-kind"><option value="entries">词条</option><option value="concepts">概念</option><option value="translations">有方向译法</option><option value="attestations">证据与对应</option><option value="works">作品</option><option value="editions">版本</option><option value="profiles">项目方案</option><option value="articles">辨析文章</option><option value="drafts">编辑草稿</option><option value="import_notes">导入注记（只读）</option></select></label>
+<section aria-label="资源目录"><h2>资源目录</h2><label>类别<select id="resource-kind"><option value="terms">术语主条目</option><option value="entries">词条</option><option value="concepts">概念</option><option value="translations">有方向译法</option><option value="attestations">证据与对应</option><option value="works">作品</option><option value="editions">版本</option><option value="profiles">项目方案</option><option value="articles">辨析文章</option><option value="drafts">编辑草稿</option><option value="import_notes">导入注记（只读）</option></select></label>
 <div class="actions"><button id="new-record" type="button">新增资源</button><button id="reload-records" type="button" class="secondary">刷新目录与版本</button></div>
 <label><input id="select-page" type="checkbox"> 勾选当前页</label><div id="record-list" class="record-list"></div>
 <nav class="pagination" aria-label="资源分页"><button id="records-prev" type="button" class="secondary">上一页</button><span id="records-page"></span><button id="records-next" type="button" class="secondary">下一页</button></nav>

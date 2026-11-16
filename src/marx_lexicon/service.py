@@ -8,6 +8,7 @@ from pathlib import Path
 from .catalog import forms, normalize
 from .database import read_dataset
 from .reference import compact_reference, project_evidence
+from .terms import TermQueries
 
 
 class VersionMismatch(ValueError):
@@ -26,13 +27,14 @@ def scope_state(scope, work_id, edition_id):
     return "match" if scope_matches(scope, work_id, edition_id) else "needs_context"
 
 
-class Lexicon:
+class Lexicon(TermQueries):
     def __init__(self, database: Path):
         if not database.is_file():
             raise FileNotFoundError("数据库不存在，请先运行 python -m marx_lexicon build，或通过 --database 指定数据库")
         self.connection = sqlite3.connect(database.resolve().as_uri() + "?mode=ro", uri=True)
         self.dataset = read_dataset(self.connection)
         self.entries = {entry.id: entry for entry in self.dataset.entries}
+        self.terms = {term.id: term for term in self.dataset.terms}
         self.senses = {sense.id: (entry, sense) for entry in self.dataset.entries
                        for sense in entry.senses}
         self.editions = {edition.id: edition for edition in self.dataset.editions}
@@ -58,7 +60,8 @@ class Lexicon:
                 "coverage": self.dataset.manifest.description,
                 "languages": self.dataset.manifest.languages,
                 "counts": {name: len(getattr(self.dataset, name)) for name in
-                           ("entries", "concepts", "translations", "attestations")},
+                           ("terms", "entries", "concepts", "translations", "attestations")},
+                "unassigned_concepts": self.list_unassigned(limit=1)["total"],
                 "review_counts": {state: sum(e.review_status == state for e in self.dataset.attestations)
                                   for state in ("unreviewed", "reviewed")},
                 "works": [w.model_dump(mode="json") for w in self.dataset.works],

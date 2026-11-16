@@ -123,11 +123,26 @@ def create_app(database: Path, with_mcp=False, *, root: Path | None = None, edit
     async def home(request: Request, query: str = "", language: str | None = None,
              work_id: str | None = None, concept_id: str | None = None, offset: int = 0,
              lexicon=Depends(service)):
-        result = lexicon.list_entries(query, language or None, work_id or None, concept_id or None, offset)
+        result = lexicon.list_terms(query, language or None, work_id or None, concept_id or None, offset)
         return page(request, "index.html", lexicon, result=result,
                     filters=dict(query=query, language=language, work_id=work_id, concept_id=concept_id),
                     previous=str(request.url.include_query_params(offset=max(0, offset - 20))),
                     next=str(request.url.include_query_params(offset=offset + 20)))
+
+    @app.get("/terms/{term_id}", response_class=HTMLResponse)
+    async def term(request: Request, term_id: str, lexicon=Depends(service)):
+        result = lexicon.read_term(term_id, "full")
+        return page(request, "term.html", lexicon, result=result,
+                    editions={e["id"]: e for e in result["editions"]})
+
+    @app.get("/api/terms")
+    async def terms(query: str | None = None, language: str | None = None, work_id: str | None = None,
+                    concept_id: str | None = None, offset: int = 0, limit: int = 20, lexicon=Depends(service)):
+        return lexicon.list_terms(query, language or None, work_id or None, concept_id or None, offset, limit)
+
+    @app.get("/api/terms/{term_id}")
+    async def api_term(term_id: str, detail: str = "compact", lexicon=Depends(service)):
+        return lexicon.read_term(term_id, detail)
 
     @app.get("/entries/{entry_id}", response_class=HTMLResponse)
     async def entry(request: Request, entry_id: str, lexicon=Depends(service)):
@@ -137,13 +152,13 @@ def create_app(database: Path, with_mcp=False, *, root: Path | None = None, edit
                     "target_sense_id": lexicon.translations[s.translation_id].target_sense_id,
                     **s.model_dump(mode="json")} for p in lexicon.profiles.values()
                    for s in p.selections if s.translation_id in translation_ids]
-        return page(request, "entry.html", lexicon, result=result, choices=choices,
+        return page(request, "entry.html", lexicon, result=result, choices=choices, owners=lexicon.terms_for("entries", entry_id),
                     sense_map={s.id: {"entry_id": e.id, "lemma": e.lemma, "language": e.language}
                                for e in lexicon.dataset.entries for s in e.senses})
 
     @app.get("/concepts/{concept_id}", response_class=HTMLResponse)
     async def concept(request: Request, concept_id: str, lexicon=Depends(service)):
-        return page(request, "concept.html", lexicon, result=lexicon.read_concept(concept_id))
+        return page(request, "concept.html", lexicon, result=lexicon.read_concept(concept_id), owners=lexicon.terms_for("concepts", concept_id))
 
     @app.get("/sources", response_class=HTMLResponse)
     async def sources(request: Request, lexicon=Depends(service)):
@@ -154,6 +169,7 @@ def create_app(database: Path, with_mcp=False, *, root: Path | None = None, edit
                  lexicon=Depends(service)):
         result = lexicon.read_evidence([identifier], dataset_version=dataset_version)
         return page(request, "evidence.html", lexicon, result=result,
+                    owners=lexicon.terms_for("attestations", identifier),
                     editions={e["id"]: e for e in result["editions"]})
 
     @app.get("/translate", response_class=HTMLResponse)

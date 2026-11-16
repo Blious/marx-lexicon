@@ -8,10 +8,11 @@ from pydantic import ValidationError
 
 from .models import (
     Attestation, Concept, Dataset, Edition, Entry, Manifest, Profile,
-    Translation, Work,
+    Translation, Work, Term,
 )
 
 CATEGORIES = {
+    "terms": ("terms", Term),
     "works": ("sources/works", Work),
     "editions": ("sources/editions", Edition),
     "entries": ("entries", Entry),
@@ -113,6 +114,16 @@ def validate_links(dataset: Dataset, root: Path, origins: dict[str, str], articl
             ref(owner, "scope.work_ids", work_id, "works")
         for edition_id in value.edition_ids:
             ref(owner, "scope.edition_ids", edition_id, "editions")
+
+    assigned = {}
+    for term in dataset.terms:
+        for identifier in term.concept_ids:
+            ref(term.id, "concept_ids", identifier, "concepts")
+            if identifier in assigned:
+                fail(term.id, "concept_ids", f"{identifier} 已归属 {assigned[identifier]}，不能重复归组")
+            assigned[identifier] = term.id
+        if term.article and not (term.article in articles if articles is not None else (root / term.article).is_file()):
+            fail(term.id, "article", f"文件不存在：{term.article}")
 
     for edition in dataset.editions:
         ref(edition.id, "work_id", edition.work_id, "works")

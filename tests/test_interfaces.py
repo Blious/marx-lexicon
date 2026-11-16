@@ -62,7 +62,7 @@ def test_http_browse_filter_and_service_parity(client, release_database):
 def test_reading_pages(client, url):
     response = client.get(url)
     assert response.status_code == 200
-    assert '数据 0.1.1' in response.text
+    assert '数据 0.2.0' in response.text
     assert '跳至正文' in response.text
     assert '<script src="/static/site.js"' in response.text
 
@@ -214,7 +214,7 @@ async def check_mcp(connection, database):
     async with connection as client:
         tools = await client.list_tools()
         assert {tool.name for tool in tools.tools} == {'get_metadata','lookup','list_entries','read_entry',
-            'read_concept','read_evidence','prepare_translation','export_glossary'}
+            'read_concept','read_evidence','prepare_translation','export_glossary','list_terms','read_term'}
         result = await client.call_tool('lookup', {'query': '劳动力', 'language': 'zh-Hans'})
         assert len(result.content) == 1 and result.structured_content is None
         with Lexicon(database) as lexicon:
@@ -225,7 +225,7 @@ async def check_mcp(connection, database):
                                   profile_id='demo-de-en')
             result = await client.call_tool('prepare_translation', reference_args)
             assert json.loads(result.content[0].text) == lexicon.prepare_translation(**reference_args)
-            evidence_args = dict(identifiers=['att-value'], languages=['de','en'], dataset_version='0.1.1')
+            evidence_args = dict(identifiers=['att-value'], languages=['de','en'], dataset_version='0.2.0')
             result = await client.call_tool('read_evidence', evidence_args)
             assert json.loads(result.content[0].text) == lexicon.read_evidence(**evidence_args)
         result = await client.call_tool('read_entry', {'entry_id': 'missing'})

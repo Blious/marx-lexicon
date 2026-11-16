@@ -15,8 +15,9 @@ from pydantic import ValidationError
 
 from .catalog import CATEGORIES, DataError, load_dataset, validate_links
 from .database import build_database
-from .edit_models import ChangeBatch, DraftRequest, ImportRequest
+from .edit_models import ChangeBatch, DraftRequest, ImportRequest, TermSaveRequest
 from .models import Dataset
+from .term_editing import TermEditing
 
 
 class EditingConflict(ValueError):
@@ -90,7 +91,7 @@ def remap_mentions(old, new):
             ref["mention_index"] = matches[0]
 
 
-class Editor:
+class Editor(TermEditing):
     def __init__(self, root: Path, database: Path):
         self.root = root.resolve()
         self.database = database.resolve()
@@ -174,8 +175,9 @@ class Editor:
         schemas = {name: model.model_json_schema() for name, (_, model) in CATEGORIES.items()}
         schemas["articles"] = {"type": "object", "required": ["id", "content"], "properties": {
             "id": {"type": "string", "description": "articles/ 下的 .md 路径"}, "content": {"type": "string"}}}
+        schemas["term-document"] = TermSaveRequest.model_json_schema()
         return {"revision": self._revision(), "schema": schemas[kind] if kind else ChangeBatch.model_json_schema(),
-                "kinds": [*CATEGORIES, "articles"], "rules": "update 仅修改给出的字段；数组整体替换；删除不级联；review 为显式学术审阅。"}
+                "kinds": [*CATEGORIES, "articles"], "rules": "update 仅修改给出的字段；普通数组整体替换；整体术语的 Entry.senses 按 ID 合并；删除不级联；review 为显式学术审阅。"}
 
     def references(self, kind, identifier):
         with self.locked():
@@ -362,6 +364,8 @@ class Editor:
         record = {"id": identifier, "title": request.title, "notes": request.notes,
                   "base_revision": previous["base_revision"] if previous else self._revision(),
                   "operations": [op.model_dump(mode="json") for op in request.operations]}
+        if request.term_document is not None:
+            record["term_document"] = request.term_document
         # 草稿修改的 expected_revision 是人工重读后的明确重定基准。
         if previous:
             record["base_revision"] = self._revision()
@@ -399,14 +403,14 @@ class Editor:
         with self.locked():
             self._expect(request.expected_revision)
             _, records = self._records()
-            operations, notes = parse_import(request, records)
+            operations, notes, term_document = parse_import(request, records)
             batch = ChangeBatch(expected_revision=request.expected_revision, operations=operations, message=request.title)
             report = {**self._candidate(batch)[3], "notes": notes}
             if request.include_operations:
                 report["operations"] = [op.model_dump(mode="json") for op in operations]
             if request.destination == "draft":
                 return self._save_draft(DraftRequest(expected_revision=request.expected_revision, title=request.title,
-                                                    operations=operations, notes=notes))
+                                                    operations=operations, notes=notes, term_document=term_document))
             if request.destination == "publish":
                 return self._apply(batch, notes=notes)
             return report

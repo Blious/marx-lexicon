@@ -2,6 +2,8 @@
 
 目标是用较少上下文传递翻译判断所需的信息。默认参考包以结构去重和按需读取节省空间，定义、用法、限制和辨析不经模型概括，也不按字数截断。
 
+术语主条目只组织查阅与编辑。翻译仍根据独立词条、义项、译法和证据判断，缺少 Term 归属的正式资料同样参与。`translation-brief/1` 中的 `terms` 指识别结果，不是模型 2 的 Term 主条目集合；归组不改变候选、范围或审阅状态。
+
 ## 默认视图与调用方式
 
 `Lexicon.prepare_translation(..., detail="compact")` 返回 `format=translation-brief/1`。省略 detail 也使用此结构。命令行 JSON 默认精简并去除格式化空白；Markdown 默认完整，方便人工查阅。`detail="full"` 或 `--detail full` 可取得逐次命中的完整结构。
@@ -42,7 +44,7 @@ recommendation 保存某条译法的 ID；译文从该译法的 text 读取。�
 4. 结合取得的完整上下文决定译法；显式选择的义项可用 sense_id 提供给下一次请求。
 
 ```powershell
-python -m marx_lexicon read-evidence att-abstract-labour --language de --language en --dataset-version 0.1.1
+python -m marx_lexicon read-evidence att-abstract-labour --language de --language en --dataset-version 0.2.0
 ```
 
 `read_evidence(ids, languages=None, dataset_version=None)` 返回完整引文、各段定位、词语位置、对应关系、版本书目和作品信息。languages 省略时读取所有语言；按语言读取时，对应关系同步投影，原术语标注索引保持不变。筛选后少于两段的关系不作为跨段对应返回。

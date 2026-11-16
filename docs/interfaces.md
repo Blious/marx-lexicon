@@ -14,7 +14,7 @@ python -m marx_lexicon build
 python -m marx_lexicon serve --with-mcp
 ```
 
-网页：`http://127.0.0.1:8000/`；Streamable HTTP MCP：`http://127.0.0.1:8000/mcp`。无需 MCP 时省略 `--with-mcp`。网页包括检索与筛选、义项、辨析、作品与版本、证据对照、段落参考和导出；所有 CSS、JavaScript 和字体均使用本地资源，不依赖 Node 或 CDN。
+网页：`http://127.0.0.1:8000/`；Streamable HTTP MCP：`http://127.0.0.1:8000/mcp`。无需 MCP 时省略 `--with-mcp`。首页按术语汇总多语言卡片，任一语言匹配后按术语去重、分页；`/terms/{id}` 展示概述、各义项的语言表达、译法条件、项目选择、版本证据与文章。独立词条、概念、证据页均显示所属术语及共享入口。另有作品与版本目录、段落参考和导出；CSS、JavaScript 和字体均使用本地资源，不依赖 Node 或 CDN。
 
 仅运行 MCP：
 
@@ -32,6 +32,8 @@ python -m marx_lexicon mcp --transport streamable-http --port 8001
 | 工具 | 参数与作用 |
 | --- | --- |
 | get_metadata | 版本、覆盖、统计和语言、作品、版本、概念名称、项目方案目录 |
+| list_terms | 可选 query、language、work_id、concept_id；offset=0、limit=20，最大 100；按术语汇总后分页 |
+| read_term | term_id；detail=compact（默认）或 full；全义项、表达、译法条件、相关术语与项目选择 |
 | lookup | query，可选 language、limit；精确词形优先 |
 | list_entries | 可选 query、language、work_id、concept_id；offset=0、limit=20，最大 100 |
 | read_entry | entry_id；完整词条、文章、译法和证据 |
@@ -42,6 +44,8 @@ python -m marx_lexicon mcp --transport streamable-http --port 8001
 
 默认只注册以上只读工具，不访问外部网络。`--edit` 额外提供按需模型、源记录、批次预览／保存、导入和草稿工具，列表见[编辑指南](editing.md)。每次输出一份无缩进 JSON 文本，不在 structured_content 再复制。元数据不夹带全库正文。段落参考默认沿用 [translation-brief/1](ai-translation.md)，完整引文按需展开；`detail=full` 显式取得完整参考。批量交换文件使用 CLI 或网页下载。
 
+`read_term` 的 compact 保留全部 sections、translations、project_choices、evidence_ids、article_paths 及实际译本词形 witnesses，完整引文按需由 read_evidence 展开。full 另带去重的 attestations、works、editions 和 articles。编辑读取 `read_editable_term` 返回可写 document 与共享影响；不要把查阅响应原样当作保存模型。
+
 先调用 get_metadata 确认范围和方案；再按段调用 prepare_translation；需核对时按原包的证据 ID、语言及数据版本调用 read_evidence。候选不等于审定，未命中不表示不存在术语。分页只用于交互检索，翻译参考不按 Top-K 丢弃适用候选。
 
 ## HTTP
@@ -49,6 +53,8 @@ python -m marx_lexicon mcp --transport streamable-http --port 8001
 | 方法与路径 | 内容 |
 | --- | --- |
 | GET /api/metadata | 同 get_metadata |
+| GET /api/terms | 同 list_terms；先去重再分页 |
+| GET /api/terms/{id} | 同 read_term，?detail=compact 或 full |
 | GET /api/entries | 同 list_entries；返回 results、total、offset、limit 与版本 |
 | GET /api/entries/{id} | 同 read_entry |
 | GET /api/concepts/{id} | 同 read_concept |

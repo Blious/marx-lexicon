@@ -7,6 +7,6 @@
 <header><a class="brand" href="/">马克思多语术语库<small>MARX · LEXICON</small></a>
 <nav aria-label="主导航"><a href="/">查阅</a><a href="/sources">作品与版本</a><a href="/translate">翻译参考</a><a href="/exports">导出</a>{% if editing %}<a href="/manage">资料管理</a>{% endif %}</nav></header>
 <main id="main">{% block content %}{% endblock %}</main>
-<footer><p id="dataset-summary">数据 {{ meta.dataset_version }} · 模型 {{ meta.schema_version }} · {{ meta.counts.entries }} 个词条 / {{ meta.counts.concepts }} 个概念</p>
+<footer><p id="dataset-summary">数据 {{ meta.dataset_version }} · 模型 {{ meta.schema_version }} · {{ meta.counts.terms }} 个术语 / {{ meta.counts.entries }} 个语言词条 / {{ meta.counts.concepts }} 个概念</p>
 <p>{{ meta.coverage }}</p><p id="dataset-review-summary">语例：{{ meta.review_counts.unreviewed }} 组待审阅，{{ meta.review_counts.reviewed }} 组已审阅。项目选用与学术审定分别记录。</p></footer>
 </body></html>

@@ -1,7 +1,7 @@
-{% extends "base.html" %}{% from "macros.html" import evidence_links %}
+{% extends "base.html" %}{% from "macros.html" import evidence_links,owner_links %}
 {% block title %}{{ result.entry.lemma }} · 马克思多语术语库{% endblock %}
-{% block content %}<a href="/">← 查阅词条</a><div class="intro"><span class="eyebrow">{{ result.entry.language }} / {{ result.entry.part_of_speech }}</span><h1>{{ result.entry.lemma }}</h1><code>{{ result.entry.id }}</code></div>
-{% if editing %}<p><a class="button" href="/manage?kind=entries&id={{ result.entry.id }}">编辑此词条 / 查看删除引用</a></p>{% endif %}
+{% block content %}{{ owner_links(owners) }}<a href="/">← 查阅词条</a><div class="intro"><span class="eyebrow">{{ result.entry.language }} / {{ result.entry.part_of_speech }}</span><h1>{{ result.entry.lemma }}</h1><code>{{ result.entry.id }}</code></div>
+{% if editing %}<p><a class="button" href="/manage/advanced?kind=entries&id={{ result.entry.id }}">编辑此词条 / 查看删除引用</a></p>{% endif %}
 {% if result.entry.forms %}<aside class="notice"><strong>已登记词形</strong>{% for f in result.entry.forms %}<p>{{ f.text }} <span class="badge">{{ f.kind }}</span> {{ f.note }}</p>{% endfor %}</aside>{% endif %}
 {% for sense in result.entry.senses %}<section class="sense" id="{{ sense.id }}"><span class="eyebrow">义项 {{ loop.index }} · {{ sense.status|status }}</span><h2>{{ sense.definition }}</h2><p>{{ sense.usage }}</p><code>{{ sense.id }}</code><p><a href="/concepts/{{ sense.concept_id }}">查看概念与辨析 →</a></p>
 {{ evidence_links(sense.evidence_ids,result.dataset_version) }}

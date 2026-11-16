@@ -4,7 +4,7 @@ import sqlite3
 
 from mcp.types import CallToolResult, TextContent, ToolAnnotations
 
-from .edit_models import ChangeBatch, DraftRequest, ImportRequest
+from .edit_models import ChangeBatch, DraftRequest, ImportRequest, TermSaveRequest
 from .editing import InvalidChanges
 from .exporting import compact
 
@@ -29,6 +29,26 @@ def add_edit_tools(server, editor):
     def get_editing_schema(kind: str | None = None) -> CallToolResult:
         """按需读取一种资源模型，省略 kind 时读取批次模型。"""
         return call("schema", kind)
+
+    @tool(read=True)
+    def read_editable_term(term_id: str) -> CallToolResult:
+        """读取整体术语编辑文档、编辑版本及共享影响范围。"""
+        return call("read_editable_term", term_id)
+
+    @tool(read=True)
+    def preview_term(request: TermSaveRequest) -> CallToolResult:
+        """预览整体术语修改，检查引用与归属。"""
+        return call("preview_term", request)
+
+    @tool(destructive=True)
+    def save_term(request: TermSaveRequest) -> CallToolResult:
+        """整体保存到本地；destination=draft 保存未完成资料。"""
+        return call("save_term", request)
+
+    @tool(read=True)
+    def list_unassigned(offset: int = 0, limit: int = 20) -> CallToolResult:
+        """列出待归组概念及其语言表达。"""
+        return call("list_unassigned", offset, limit)
 
     @tool(read=True)
     def read_editable_records(kind: str = "entries", identifiers: list[str] | None = None,

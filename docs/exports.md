@@ -18,17 +18,21 @@ python -m marx_lexicon export-glossary --profile demo-de-zh --format tbx --outpu
 
 指定 --output 时同时写入 `<输出文件名>.report.json`，包含版本、格式、范围、行数、概念数、字段映射、complete_snapshot 和信息损失。没有输出路径时，数据写标准输出，报告写标准错误；网页分别提供文件和报告下载。
 
-只有全库 JSON 的 complete_snapshot=true。dataset 可用 Dataset.model_validate 再校验，articles 保存数据库中的全部文章内容。这是完整语义快照，不是保留 YAML 注释、格式和编辑目录清单的 Git 仓库备份。
+只有全库 JSON 的 complete_snapshot=true。dataset 包含 terms 主条目，可用 Dataset.model_validate 再校验；articles 保存数据库中的全部文章内容，包括只被 Term 引用的文章。这是完整语义快照，不是保留 YAML 注释、格式和编辑目录清单的 Git 仓库备份。
 
 | 格式 | 组织方式与边界 |
 | --- | --- |
 | JSON | 全库为版本 + Dataset + articles；项目为既有 profile/rows/evidence 结构，项目表不是全库快照 |
-| Markdown | 全库逐词条、项目逐译法阅读，附范围、状态与证据；不能重建全部结构 |
+| Markdown | 全库按术语、概念义项与语言表达阅读，附待归组资料；项目逐译法阅读，保留范围、状态与证据；不能重建全部结构 |
 | CSV | 全库每行一个义项；项目每行一条有方向译法；列表／对象为 JSON 单元格，默认 UTF-8 BOM |
 | TBX | TBX v3、TBX-Basic DCA；概念、语言、义项分别映射 conceptEntry、langSec、termSec |
 | SKOS | Turtle 概念图，不替代词条、译法、项目、完整引文或文章 |
 
 CSV 项目表分别保存译法 scope、profile_choices 和方案总体 profile.scope，不能只看一个选择布尔值。全库 CSV 不含完整译法关系、证据和文章；项目 CSV 的完整证据仍按 ID 从原库或 JSON 读取。
+
+CSV、TBX、SKOS 延续义项或概念的独立语义，不完整携带 Term 的标题、概述、有序归组和主条目文章引用；报告明确这一边界。同一术语中的多个概念在 TBX／SKOS 仍保持独立，不生成额外等价断言。需要完整恢复归组时使用全库 JSON。
+
+编辑页“下载术语包 JSON”输出 `{format:"term-bundle/1",documents:[{term,resources}]}`；也可通过编辑读取构造多个 document 的批量 JSON／YAML 包。包内 Entry 只投影相关义项，共享证据及文章按 ID 保存；导入合并回原资料，不删除外部义项。术语包用于部分交换，不标为全库完整快照，项目全局方案仍单独维护。导入方式见[编辑指南](editing.md)。
 
 ## TBX
 

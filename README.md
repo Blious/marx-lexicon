@@ -1,8 +1,8 @@
 # 马克思多语术语库
 
-以原文证据为基础的马克思术语库，面向 AI 翻译调用和人工查阅。词条、义项、概念、出版译文和项目译法分别保存，允许多种有条件的解释与译法并存。
+以原文证据为基础的马克思术语库，面向 AI 翻译调用和人工查阅。以术语为单位汇总多语言表达、概念义项、有方向的译法和版本证据；底层资料分别保存稳定 ID 和引用，允许多种有条件的解释与译法并存。
 
-当前数据版本 **0.1.1**：六组德中英示例，共 22 个词条、8 个概念、7 组三语短语例及 17 条译法关系。示例包括 `Wert`、`Arbeitskraft`、`abstrakte Arbeit`、`Entfremdung`、`Entäußerung`、`Aufhebung`，另有 `Aufheben` 等附属词条。语例与解释仍是待学术审阅的工作稿，覆盖范围限于列出的作品、版本和上下文。
+程序 **0.4.0**、模型 **2**、数据 **0.2.0**：七个术语示例，共 22 个语言词条、8 个概念、7 组三语短语例及 17 条译法关系。术语为价值、劳动力、抽象劳动、异化、外化、`Aufhebung`、`Aufheben`。`Aufhebung` 汇总宗教与私有财产两个语境，`Aufheben` 独立关联；中文“扬弃”的共享词条 ID 保持不变。语例与解释仍是待学术审阅的工作稿，覆盖范围限于列出的作品、版本和上下文。
 
 ## 安装与构建
 
@@ -17,6 +17,8 @@ python -m marx_lexicon build
 运行与测试均可在安装依赖后离线完成。默认数据库为 `build/lexicon.sqlite`；从其他目录调用时，在子命令前使用 `--root <仓库目录>`，或者对查询命令使用 `--database <数据库文件>`。
 
 ## 查阅术语
+
+网页首页按术语展示多语言卡片。检索任一语言、译词或变体后，先归组去重再分页；详情在一个页面展示全部义项、语言表达、译法条件、项目选择、文章与版本证据。MCP 使用 `list_terms`、`read_term`；精简视图保留全部义项与条件，`detail="full"` 展开引文和文章。以下 CLI 用于独立语言词条及翻译参考：
 
 ```powershell
 python -m marx_lexicon lookup 劳动力 --language zh-Hans --format markdown
@@ -45,7 +47,7 @@ python -m marx_lexicon prepare-translation --text-file examples/philosophy.de.tx
 完整引文和书目信息可按证据 ID、语言和数据版本继续读取：
 
 ```powershell
-python -m marx_lexicon read-evidence att-abstract-labour --language de --language en --dataset-version 0.1.1
+python -m marx_lexicon read-evidence att-abstract-labour --language de --language en --dataset-version 0.2.0
 python -m marx_lexicon read-evidence att-alienation-pair --format markdown
 ```
 
@@ -96,7 +98,9 @@ python -m marx_lexicon export-glossary --profile demo-de-en --format csv --outpu
 
 全库支持 JSON、Markdown、CSV、TBX-Basic DCA 和 SKOS Turtle；项目表支持前四种。文件旁同时保存 `.report.json`，说明映射与信息损失；仅全库 JSON 是含全部文章的完整语义快照。详见[网页／HTTP／MCP 使用说明](docs/interfaces.md)和[导出约定](docs/exports.md)。
 
-资料管理支持词条、义项、概念、译法、证据、作品、版本、方案和文章的新增、修改、删除、批量编辑，以及 JSON／YAML／CSV／TBX 导入。删除会列出引用，须在同一批次修复；不完整资料可保存为独立编辑草稿。所有资料保存仅写入本地，不自动提交或推送 Git。操作与 MCP 写入说明见[本地编辑指南](docs/editing.md)。
+`/manage` 以术语为单位集中编辑多语言、义项、译法、证据、来源和文章，一次校验保存。新建自动分配 ID，通过选择器维护引用；共享资料显示受影响术语。可从同一表单恢复编辑草稿、下载 JSON 术语包，或为待归组概念建立主条目。高级分类与批次管理位于 `/manage/advanced`，项目全局配置也在此维护。
+
+支持 JSON／YAML 单个或批量术语包、分类数据，以及 CSV／TBX 导入。未明确归组的新概念进入待归组；删除主条目仅解除归组，底层删除须明确提交并通过引用检查。所有资料保存仅写入本地，不自动提交或推送 Git。操作与 MCP 写入说明见[本地编辑指南](docs/editing.md)。
 
 运行全部测试前安装 `python -m pip install -e ".[web,mcp,export,edit,dev]"`。标准校验资源已固定，安装依赖后测试无需在线读取来源。
 
@@ -104,6 +108,7 @@ python -m marx_lexicon export-glossary --profile demo-de-en --format csv --outpu
 
 | 目录 | 用途 |
 | --- | --- |
+| `data/terms/` | 术语主条目、概述、有序概念义项和文章引用 |
 | `data/entries/` | 各语言词条、词形和义项 |
 | `data/concepts/` | 概念说明和有依据的概念关系 |
 | `data/translations/` | 义项之间的译法及适用范围 |
@@ -122,4 +127,4 @@ python -m marx_lexicon export-glossary --profile demo-de-en --format csv --outpu
 
 每次完成更改后都必须提交并推送到远端，具体流程见[本地开发文档](docs/development.md)。
 
-详见[架构方案](docs/architecture.md)、[数据模型与编辑约定](docs/data-model.md)、[AI 翻译参考](docs/ai-translation.md)和[示例说明](examples/README.md)。程序 0.3.0 提供本地网页与 MCP 编辑、导入和草稿；本次接口升级保留数据版本 0.1.1，学术审阅状态不因新增接口而改变。
+详见[架构方案](docs/architecture.md)、[数据模型与编辑约定](docs/data-model.md)、[AI 翻译参考](docs/ai-translation.md)和[示例说明](examples/README.md)。模型 2 直接重建数据库，不提供旧数据库或旧模型兼容层；从旧工作区更新后重新运行 `build`。归组不改变底层语义、翻译候选或学术审阅状态。

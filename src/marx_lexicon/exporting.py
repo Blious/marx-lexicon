@@ -159,7 +159,11 @@ def export_file(lexicon, format="json", profile_id=None, base_uri=BASE_URI):
         else:
             content = ("# " + lexicon.dataset.manifest.title + "\n\n" +
                        lexicon.dataset.manifest.description + "\n\n" + "\n\n---\n\n".join(
-                           markdown(lexicon.read_entry(e.id)) for e in lexicon.dataset.entries)).encode("utf-8")
+                           markdown(lexicon.read_term(t.id, "full")) for t in lexicon.dataset.terms) +
+                       "\n\n# 待归组资料\n\n" + "\n\n".join(
+                           markdown(lexicon.read_entry(e.id)) for e in lexicon.dataset.entries
+                           if any(s.concept_id not in {c for t in lexicon.dataset.terms for c in t.concept_ids}
+                                  for s in e.senses))).encode("utf-8")
     elif format == "csv":
         content = csv_content([{**r, **lexicon.version(), "profile": glossary["profile"]} for r in rows]
                               if glossary else rows)
@@ -178,14 +182,16 @@ def export_file(lexicon, format="json", profile_id=None, base_uri=BASE_URI):
                  "草稿关系与 distinct/possible_equivalent 使用项目关系记录，不断言 exactMatch。"],
     }
     media_type, extension = MEDIA[format]
+    if format not in ("json", "markdown"):
+        losses[format].append("不包含完整术语主条目分组；概念和语言记录继续独立组织。")
     return ExportResult(content, media_type, f"{profile_id or 'lexicon'}.{extension}", {
         **lexicon.version(), "format": format, "scope": profile_id or "dataset",
         "counts": {"rows": len(rows), "concepts": len({r[key]['concept_id'] for r in rows
                                                        for key in ('source_sense', 'target_sense')})
                    if glossary else len(lexicon.concepts)},
         "complete_snapshot": format == "json" and not profile_id,
-        "mapping": {"json": "Dataset + articles（全库）或既有 profile/rows/evidence 结构（项目）",
-                    "markdown": "词条/义项/译法/证据的人工视图", "csv": "每行一个义项（全库）或一条译法（项目）",
+        "mapping": {"json": "含 terms 的 Dataset + articles（全库）或既有 profile/rows/evidence 结构（项目）",
+                    "markdown": "术语/概念义项/语言表达/译法/证据的人工视图；附待归组资料", "csv": "每行一个义项（全库）或一条译法（项目）",
                     "tbx": "concept → conceptEntry；语言 → langSec；义项 → termSec；条件与证据 → note/admin",
                     "skos": "concept → skos:Concept；labels → prefLabel；已审阅层级/关联 → SKOS 属性"}[format],
         "losses": losses[format], **({"base_uri": base_uri} if format == "skos" else {})})

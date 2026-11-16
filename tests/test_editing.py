@@ -69,13 +69,13 @@ def test_crud_local_save_preserves_omitted_fields_and_profiles(editor, monkeypat
     untouched = (editor.root / "data/entries/de.yaml").read_bytes()
     result = editor.apply(batch(editor, new_work()))
     assert result["local_saved"] and result["storage"] == "local" and result["revision"] == 1
-    assert result["dataset_version"] == "0.1.2"
+    assert result["dataset_version"] == "0.2.1"
     assert (editor.root / "data/entries/de.yaml").read_bytes() == untouched
     editor.apply(batch(editor, op("works", "work-test", title="修改标题")))
     record = editor.read("works", ["work-test"])["records"][0]
     assert record["author"] == "作者" and record["title"] == "修改标题"
     dataset = load_dataset(editor.root)
-    assert all(p.dataset_version == "0.1.3" for p in dataset.profiles)
+    assert all(p.dataset_version == "0.2.2" for p in dataset.profiles)
     editor.apply(batch(editor, op("works", "work-test", "delete")))
     assert "work-test" not in [w.id for w in load_dataset(editor.root).works]
     assert not (editor.runtime / "transaction.json").exists()
@@ -119,14 +119,14 @@ def test_version_conflict_and_immutable_id(editor):
     invalid = batch(editor, {"kind": "works", "id": "work-test", "action": "update", "values": {"id": "work-renamed"}})
     assert not editor.preview(invalid)["valid"]
     with Lexicon(editor.database) as lexicon, pytest.raises(VersionMismatch):
-        lexicon.read_evidence(["att-value"], dataset_version="0.1.1")
+        lexicon.read_evidence(["att-value"], dataset_version="0.2.0")
 
 
 def test_editing_drafts_stay_out_of_published_data_then_publish(editor):
     draft = editor.save_draft(DraftRequest(expected_revision=0, title="未完资料", operations=[
         op("works", "work-draft", "create", title="只有标题")]))
     assert not draft["validation"]["valid"]
-    assert editor.read()["dataset_version"] == "0.1.1"
+    assert editor.read()["dataset_version"] == "0.2.0"
     assert "work-draft" not in {w.id for w in load_dataset(editor.root).works}
     with pytest.raises(InvalidChanges):
         editor.publish_draft(draft["id"], 1)
@@ -134,7 +134,7 @@ def test_editing_drafts_stay_out_of_published_data_then_publish(editor):
     saved = editor.save_draft(DraftRequest(expected_revision=1, id=draft["id"], operations=[complete]))
     assert saved["validation"]["valid"]
     result = editor.publish_draft(draft["id"], 2)
-    assert result["dataset_version"] == "0.1.2" and editor.read("drafts")["total"] == 0
+    assert result["dataset_version"] == "0.2.1" and editor.read("drafts")["total"] == 0
 
 
 def test_stale_draft_needs_explicit_resave_and_can_be_deleted(editor):
@@ -143,7 +143,7 @@ def test_stale_draft_needs_explicit_resave_and_can_be_deleted(editor):
     with pytest.raises(EditingConflict):
         editor.publish_draft(draft["id"], 2)
     editor.delete_draft(draft["id"], 2)
-    assert editor.read("drafts")["total"] == 0 and editor.read()["dataset_version"] == "0.1.2"
+    assert editor.read("drafts")["total"] == 0 and editor.read()["dataset_version"] == "0.2.1"
 
 
 def test_import_notes_survive_draft_publication(editor):
@@ -162,7 +162,7 @@ def test_build_recovers_interrupted_editor_before_loading_sources(editor):
         "data/dataset.yaml": base64.b64encode(manifest.read_bytes()).decode()}, "published": True}), encoding="utf-8")
     manifest.write_text("interrupted: true", encoding="utf-8")
     assert main(['--root',str(editor.root),'build']) == 0
-    assert load_dataset(editor.root).manifest.dataset_version == "0.1.1"
+    assert load_dataset(editor.root).manifest.dataset_version == "0.2.0"
 
 
 def test_review_is_explicit_and_semantic_edit_resets_it(editor):
@@ -217,7 +217,7 @@ def test_failed_database_rebuild_rolls_back_sources_and_revision(editor, monkeyp
     monkeypatch.setattr(module, "build_database", fail_once)
     with pytest.raises(OSError):
         editor.apply(batch(editor, new_work()))
-    assert editor.read()["revision"] == 0 and editor.read()["dataset_version"] == "0.1.1"
+    assert editor.read()["revision"] == 0 and editor.read()["dataset_version"] == "0.2.0"
     assert not (editor.root / "data/sources/works/managed.yaml").exists()
 
 
@@ -227,7 +227,7 @@ def test_interrupted_transaction_recovers_and_lock_blocks_concurrent_save(editor
     (editor.runtime / "transaction.json").write_text(json.dumps({"before": {
         "data/dataset.yaml": base64.b64encode(original).decode()}, "published": True}), encoding="utf-8")
     manifest.write_text("broken: true", encoding="utf-8")
-    assert editor.read()["dataset_version"] == "0.1.1"
+    assert editor.read()["dataset_version"] == "0.2.0"
     competing = Editor(editor.root, editor.database)
     with FileLock(str(editor.runtime / "write.lock")):
         competing.lock.timeout = 0
@@ -247,7 +247,7 @@ def test_native_import_snapshot_modes_and_duplicate_ids(editor, format):
     assert not editor.import_records(request)["valid"]
     request.mode = "update"
     request.destination = "publish"
-    assert editor.import_records(request)["dataset_version"] == "0.1.2"
+    assert editor.import_records(request)["dataset_version"] == "0.2.1"
     request.expected_revision = 1
     request.destination = "preview"
     request.content = ('[{"id":"duplicate"},{"id":"duplicate"}]' if format == "json" else '- id: duplicate\n- id: duplicate\n')
@@ -312,7 +312,7 @@ def test_http_editing_parity_readonly_and_errors(editor):
         assert client.post('/api/editor/preview', json=payload).json() == editor.preview(ChangeBatch(**payload))
         response = client.post('/api/editor/apply', json=payload)
         assert response.status_code == 200 and response.json()["storage"] == "local"
-        assert client.get('/api/metadata').json()['dataset_version'] == '0.1.2'
+        assert client.get('/api/metadata').json()['dataset_version'] == '0.2.1'
         assert client.post('/api/editor/apply', json=payload).status_code == 409
         assert client.post('/api/editor/apply', json={**payload,"expected_revision":1}, headers={"Origin":"https://elsewhere.test"}).status_code == 403
         html = client.post('/api/editor/markdown', json={"content":"<script>bad</script>"}).json()['html']
@@ -341,8 +341,8 @@ async def exercise_writer(connection, editor):
             op('works','work-incomplete','create',title='草稿')]}})
         assert not json.loads(saved.content[0].text)['validation']['valid']
         metadata = await client.call_tool('get_metadata', {})
-        assert json.loads(metadata.content[0].text)['dataset_version'] == '0.1.2'
-        evidence = await client.call_tool('read_evidence', {'identifiers':['att-value'],'languages':['en'],'dataset_version':'0.1.2'})
+        assert json.loads(metadata.content[0].text)['dataset_version'] == '0.2.1'
+        evidence = await client.call_tool('read_evidence', {'identifiers':['att-value'],'languages':['en'],'dataset_version':'0.2.1'})
         assert not evidence.is_error and len(evidence.content) == 1
 
 

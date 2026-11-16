@@ -157,6 +157,7 @@ def tbx_records(content):
 
 def parse_import(request, current):
     notes = []
+    documents = None
     if request.format == "csv":
         resources = csv_records(request.content, request.columns, request.kind)
         notes.append("CSV 只恢复所含字段；空缺的完整证据及文章不会自动补造。")
@@ -167,7 +168,57 @@ def parse_import(request, current):
             raw = json.loads(request.content.lstrip("\ufeff")) if request.format == "json" else yaml.safe_load(request.content)
         except (json.JSONDecodeError, yaml.YAMLError) as error:
             raise ValueError(f"导入文件无法解析：{error}") from error
-        if isinstance(raw, dict) and "dataset" in raw:
+        documents = (raw.get("documents") if isinstance(raw, dict) and raw.get("format") == "term-bundle/1"
+                     else [raw] if isinstance(raw, dict) and "term" in raw
+                     else raw if isinstance(raw, list) and raw and isinstance(raw[0], dict) and "term" in raw[0] else None)
+        if documents is not None:
+            if not isinstance(documents, list) or any(not isinstance(d, dict) or not isinstance(d.get("term"), dict) for d in documents):
+                raise ValueError("术语包 documents 须为包含 term 对象的文档列表")
+            resources = {kind: [] for kind in (*CATEGORIES, "articles")}
+            grouped = {}
+            for document in documents:
+                if not isinstance(document.get("resources", {}), dict):
+                    raise ValueError("术语文档 resources 须为按类别组织的对象")
+                bundle = {**document.get("resources", {}), "terms": [document["term"]]}
+                for kind, items in bundle.items():
+                    if kind not in resources:
+                        raise ValueError(f"未知资源类别 {kind}")
+                    if not isinstance(items, list):
+                        raise ValueError(f"{kind} 须为列表")
+                    for item in items:
+                        if not isinstance(item, dict):
+                            raise ValueError(f"{kind} 的资源须为对象")
+                        item = dict(item)
+                        if not item.get("id"):
+                            item["id"] = identifier(kind.rstrip("s"))
+                            notes.append(f"{kind} 分配稳定 ID：{item['id']}")
+                        key = (kind, item.get("id"))
+                        if key in grouped:
+                            old = grouped[key]
+                            if kind == "entries":
+                                for field in set(old) | set(item):
+                                    if field != "senses" and field in old and field in item and old[field] != item[field]:
+                                        raise ValueError(f"术语包共享资源内容冲突：{key}.{field}")
+                                senses = {s["id"]: s for s in old.get("senses", [])}
+                                for sense in item.get("senses", []):
+                                    if sense["id"] in senses and senses[sense["id"]] != sense:
+                                        raise ValueError(f"术语包义项冲突：{sense['id']}")
+                                    senses[sense["id"]] = sense
+                                old.update(item)
+                                old["senses"] = list(senses.values())
+                            elif old != item:
+                                raise ValueError(f"术语包共享资源内容冲突：{key}")
+                        else:
+                            grouped[key] = dict(item)
+            for (kind, rid), item in grouped.items():
+                if kind == "entries" and request.mode != "create" and rid in current["entries"]:
+                    senses = {s["id"]: s for s in current["entries"][rid]["senses"]}
+                    for sense in item.get("senses", []):
+                        senses[sense["id"]] = {**senses.get(sense["id"], {}), **sense}
+                    item["senses"] = list(senses.values())
+                resources[kind].append(item)
+            notes.append("术语包按稳定 ID 汇总，语言词条的其他义项保留；未提供的资源不删除。")
+        elif isinstance(raw, dict) and "dataset" in raw:
             resources = {**raw["dataset"], "articles": raw.get("articles", {})}
             resources.pop("manifest", None)
             notes.append("快照保留资源 ID；发布时使用本库当前版本并递增，不回退版本号。")
@@ -204,4 +255,18 @@ def parse_import(request, current):
             operations.append(Operation(action=action, kind=kind, id=item["id"], values=item))
     if not operations:
         raise ValueError("文件中没有可导入的资源")
-    return operations, notes
+    term_document = None
+    if documents is not None and len(documents) == 1:
+        term_op = next(op for op in operations if op.kind == "terms")
+        term = {**current["terms"].get(term_op.id, {}), **term_op.values}
+        resources = {}
+        for op in operations:
+            if op.kind == "terms":
+                continue
+            record = {**current[op.kind].get(op.id, {}), **op.values}
+            if op.kind == "entries":
+                record["senses"] = [s for s in record.get("senses", [])
+                                    if s.get("concept_id") in term.get("concept_ids", [])]
+            resources.setdefault(op.kind, []).append(record)
+        term_document = {"term": term, "resources": resources}
+    return operations, notes, term_document

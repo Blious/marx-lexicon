@@ -2,7 +2,7 @@
 
 ## 文件格式与身份
 
-`data/dataset.yaml` 保存模型版本、数据版本和语言清单。各数据分类中的 `.yaml` 文件顶层均为列表，可以按语言、作品或编辑批次拆分。作品与版本分别位于 `data/sources/works/` 和 `data/sources/editions/`。`data/coverage.yaml` 是独立的编辑覆盖清单，不进入术语模型。
+`data/dataset.yaml` 保存模型版本、数据版本和语言清单。当前模型 2、数据 0.2.0；升级后直接重建 SQLite，没有旧模型或旧数据库兼容层。各数据分类中的 `.yaml` 文件顶层均为列表，可以按语言、作品或编辑批次拆分。主条目位于 `data/terms/`，作品与版本分别位于 `data/sources/works/` 和 `data/sources/editions/`。`data/coverage.yaml` 是独立的编辑覆盖清单，不进入术语模型。
 
 模型定义位于 `src/marx_lexicon/models.py`，`schemas/dataset.schema.json` 描述合并后的完整数据集。字段、类型和必填约束以模型为准，通过 `export-schema` 更新 Schema；运行时从 YAML 读取并校验，不另行维护一套 JSON Schema 校验器。
 
@@ -14,6 +14,7 @@
 
 | 对象 | 核心字段与语义 |
 | --- | --- |
+| Term | 稳定 ID、标题、概述、有序 concept_ids、可选辨析文章；聚合引用，不复制成员资料 |
 | Work | 作者、作品题名、写作时间、原始语言；作品身份不等于某一版书 |
 | Edition | 所属作品、语言、原文／译文类型、书目、译者、载体 URL、出版年份与说明 |
 | Entry | 语言、原词、词性、词形列表、义项列表、辨析文章相对路径 |
@@ -24,7 +25,11 @@
 | Attestation | 多版本短引文、对应候选、可选外部证据引用与审阅状态 |
 | Profile | 数据版本、语言方向、总体范围、各义项的译法选择与说明 |
 
-词条的 `lemma` 自身即可匹配，不必重复列入 forms。forms 用于拼写和词形检索，语义相关的另一原词应另建条目。例如 `Arbeitsvermögen` 没有被偷偷加入 `Arbeitskraft` 的词形；`Aufheben` 是独立附属词条，不能当作 `Aufhebung` 的屈折变化。
+一个概念最多归属一个 Term，允许待归组。按 Sense.concept_id 汇总表达，同一 Entry 可通过不同义项出现在多个术语中；编辑某一术语只提交相关义项，并按 ID 合并回原 Entry。省略义项不会删除它，删除须显式列出。归属调整须在同一批次更新所有涉及的 Term，不允许中间重复归组。
+
+当前七个主条目为价值、劳动力、抽象劳动、异化、外化、Aufhebung、Aufheben。Aufhebung 包含宗教与私有财产两个概念，Aufheben 的辩证活动概念独立关联；共享中文“扬弃”仍是一个 Entry、三个 Sense。劳动力的 `labour-power` 与 `capacity for labour` 保持为两个英语表达。
+
+词条的 `lemma` 自身即可匹配，不必重复列入 forms。forms 用于拼写和词形检索，语义相关的另一原词应另建条目。例如 `Arbeitsvermögen` 没有被偷偷加入 `Arbeitskraft` 的词形；`Aufheben` 不能当作 `Aufhebung` 的屈折变化。
 
 `Concept.labels` 用于导航，不是跨语境的权威译名。`related`、`distinct`、`broader`、`narrower`、`possible_equivalent` 均需解释和依据；模型不据这些关系自动推导同义或替换规则。解释文本是编辑说明，不作为马克思的直接定义引用。
 
@@ -32,7 +37,7 @@
 
 每个 Passage 保存具体版本、短引文、发言主体、材料类型、定位和术语标注。定位中 `section` 和 URL 必填；书页与稿页可空，`precision` 如实说明 page／section／quote。未登记纸本页码时不从其他版本补填，也不使用外部网页工具的行号充当原书行号。
 
-引文只整理 HTML 排版空白，不做拼写现代化或词语替换。短引文可以是句中片段，其上下文由章节、网页和辨析说明交代。审阅状态仍为 `unreviewed`，页码取自转录中的版面标记，不宣称已逐字对照纸本。
+整理来源时只处理 HTML 排版空白，不做拼写现代化或词语替换。保存 Passage.text 时保留输入首尾空白，以免改变术语标注位置。短引文可以是句中片段，其上下文由章节、网页和辨析说明交代。审阅状态仍为 `unreviewed`，页码取自转录中的版面标记，不宣称已逐字对照纸本。
 
 术语标注使用零起点的 Unicode 字符区间 `[start, end)`，对应 Python 字符串切片，须落在引文内且匹配该词条的已登记形式。同一段落可标注多个术语，甚至同一文字的多个候选解释；后续 JavaScript 客户端需要留意 UTF-16 代码单元与 Unicode 字符位置的区别。
 
@@ -44,7 +49,7 @@
 
 `Scope.work_ids` 和 `edition_ids` 各自是允许值列表；非空列表之间是“且”的关系，空列表表示不作该项限制。这里的 edition 指待译原文版本，目标译本由语例中对应段落的 edition 指明。
 
-Translation 保存文献依据和译法可用条件；Profile.Selection 保存项目按义项作出的选择。两个不同德文词条可指向同一中文义项，例如附属词条与相关词条出现同译时仍分别返回。共有译词本身不触发词条合并。
+Translation 保存文献依据和译法可用条件；Profile.Selection 保存项目按义项作出的选择。两个不同德文词条可指向同一中文义项，例如独立词条与相关词条出现同译时仍分别返回。共有译词本身不触发词条合并。
 
 调用 `prepare_translation` 时可提供作品或源版本。版本可以确定作品；若两者同时提供，必须一致。只提供作品但译法还限制版本时，候选的 `applicability=needs_context`，不会输出确定建议。`match` 表示给定条件已满足，`mismatch` 的候选不返回。
 

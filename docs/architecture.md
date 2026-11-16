@@ -4,7 +4,7 @@
 
 同一套有出处的多语数据同时服务于术语查阅、上下文辨析和翻译项目。编辑者能够追溯原词出现和实际译本用词，翻译程序能够按义项、作品、版本及项目方案取得建议。
 
-首批以六组德中英术语验证完整流程，已交付数据模型、工作稿语例、文章、命令行、本地查阅网页、HTTP、MCP 和五种导出格式。数据结构允许扩展语言、作品和研究传统；当前覆盖不代表已建立全面词汇表。
+首批以七个德中英术语、八个概念验证完整流程，已交付数据模型、工作稿语例、文章、命令行、本地查阅网页、HTTP、MCP 和五种导出格式。程序 0.4.0、模型 2、数据 0.2.0。数据结构允许扩展语言、作品和研究传统；当前覆盖不代表已建立全面词汇表。
 
 ## 数据流与维护边界
 
@@ -16,14 +16,18 @@ flowchart TB
     C --> V[模型及引用校验]
     V --> D[SQLite 数据快照与检索索引]
     D --> S[统一查询与翻译参考逻辑]
+    D --> T[Term 术语聚合查询]
+    T --> W[本地网页 / HTTP API / MCP]
     S --> CLI[命令行]
     CLI --> J[JSON 供程序调用]
     CLI --> H[Markdown 供人工阅读]
-    S --> W[本地网页 / HTTP API / MCP]
+    S --> W
+    W --> P[整体术语补丁 / 高级资源批次]
+    P --> V
     S --> E[JSON / Markdown / CSV / TBX / SKOS]
 ```
 
-YAML 和 Markdown 是编辑来源。SQLite 保存完整结构化快照、文章内容和索引，可独立查询并随时重建。`Editor` 将网页和 MCP 写入统一为批次：在内存中应用全部操作，校验完整 Dataset 与引用后写回涉及的源文件并重建 SQLite。新增记录集中于各类别的 `managed.yaml`，已有记录保留原文件位置。资料只在本地保存，Git 由使用者手动提交推送。
+YAML 和 Markdown 是编辑来源。SQLite 保存完整结构化快照、文章内容和索引，可独立查询并随时重建。`TermQueries` 汇总已有资料，`TermEditing` 将整体术语文档转换为 `Editor` 的显式批次：在内存中应用全部操作，校验完整 Dataset 与引用后写回涉及的源文件并重建 SQLite。新增记录集中于各类别的 `managed.yaml`，已有记录保留原文件位置。资料只在本地保存，Git 由使用者手动提交推送。
 
 编辑草稿位于 `data/drafts/`，保存尚未完成的操作和导入说明，不进入 Dataset、翻译参考或正式导出。`data/editor-state.yaml` 保存编辑版本，用于阻止陈旧请求覆盖新修改；正式发布另行递增数据补丁版本并更新所有方案的版本固定值。跨进程文件锁串行化保存；`build/editor/transaction.json` 只暂存当前事务涉及文件的旧内容，用于失败回滚或中断恢复，完成后删除，不建立长期备份。
 
@@ -33,6 +37,7 @@ YAML 和 Markdown 是编辑来源。SQLite 保存完整结构化快照、文章�
 
 ```mermaid
 erDiagram
+    TERM o|--|{ CONCEPT : groups_in_order
     WORK ||--o{ EDITION : has
     ENTRY ||--|{ SENSE : has
     ENTRY ||--o{ FORM : has
@@ -47,7 +52,9 @@ erDiagram
     TRANSLATION ||--o{ SELECTION : chosen
 ```
 
-词形帮助识别文本，义项表达特定含义，概念组织跨语言查阅。译法关系连接两个语言的具体义项，其适用范围和证据均为独立字段。概念不自动合并同词、近义词或同译词；关系说明保留解释和依据。
+`Term` 是人工和 MCP 的主要单位，仅保存标题、概述、有序概念 ID 和可选文章引用，不复制语言资料。概念最多归属一个术语，也可未归组。同一语言词条的不同义项可参与多个术语；例如“扬弃”在 Aufhebung 与 Aufheben 中分别投影其相关义项。多个英语表达仍分别保留语言词条和义项 ID。
+
+词形帮助识别文本，义项表达特定含义，概念组织跨语言查阅。译法关系连接两个语言的具体义项，其适用范围和证据均为独立字段。概念不自动合并同词、近义词或同译词；关系说明保留解释和依据。术语检索先按成员词形与说明匹配、按术语去重排序，再分页。完整读取按义项展示表达，共享证据、文章按 ID 汇总，精简读取保留条件及引用并省略全文。
 
 语例分别保存每个版本中的短引文和定位。各语种在同组出现只表示它们属于对应候选，不能据此推导逐词等价。段落级对应保存段落 ID，词语级对应还必须显式指定各段落中的术语标注，支持多对多关系。
 
@@ -69,7 +76,9 @@ erDiagram
 
 明确义项通过 `--sense` 提供。系统不从词频或近似语义强行选定 `Aufhebung` 的含义，不进行通用德文词形分析，也不把未命中理解为不存在术语。
 
-`Lexicon.lookup`、`read_entry`、`read_evidence`、`prepare_translation` 和 `export_glossary` 是各入口共用的业务接口；CLI 将其结果输出为 JSON 或 Markdown。`prepare_translation` 返回候选与方案参考，不承担整段翻译。精简视图的字段和信息保留约定见 [AI 翻译参考](ai-translation.md)。
+`Lexicon.list_terms`、`read_term` 是术语查阅接口；`Editor.read_editable_term`、`preview_term`、`save_term` 负责整体编辑。高级入口继续维护独立资源与复杂批次。整体保存按 ID 合并语言词条义项，未提交的字段和外部义项保留；删除必须列明。归属调整在一个批次中同时更新相关主条目，完整引用校验禁止重复归组。
+
+`Lexicon.lookup`、`read_entry`、`read_evidence`、`prepare_translation` 和 `export_glossary` 继续处理独立语义资料。`prepare_translation` 不依赖 Term 归组，待归组的正式资料同样参与，保持 `translation-brief/1` 全候选覆盖，不承担整段翻译。精简视图的字段和信息保留约定见 [AI 翻译参考](ai-translation.md)。
 
 ## 扩展与标准交换
 

@@ -411,8 +411,8 @@
       "additionalProperties": false,
       "properties": {
         "schema_version": {
-          "const": "1",
-          "default": "1",
+          "const": "2",
+          "default": "2",
           "title": "Schema Version",
           "type": "string"
         },
@@ -753,6 +753,51 @@
       "title": "Sense",
       "type": "object"
     },
+    "Term": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "summary": {
+          "default": "",
+          "title": "Summary",
+          "type": "string"
+        },
+        "concept_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Concept Ids",
+          "type": "array"
+        },
+        "article": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Article"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "concept_ids"
+      ],
+      "title": "Term",
+      "type": "object"
+    },
     "Translation": {
       "additionalProperties": false,
       "properties": {
@@ -849,6 +894,13 @@
     "manifest": {
       "$ref": "#/$defs/Manifest"
     },
+    "terms": {
+      "items": {
+        "$ref": "#/$defs/Term"
+      },
+      "title": "Terms",
+      "type": "array"
+    },
     "works": {
       "items": {
         "$ref": "#/$defs/Work"
@@ -901,6 +953,7 @@
   },
   "required": [
     "manifest",
+    "terms",
     "works",
     "editions",
     "entries",

@@ -46,6 +46,38 @@ def evidence_markdown(result):
 def markdown(result):
     if result.get("format") == "translation-brief/1":
         return compact_markdown(result)
+    if "term" in result:
+        term = result["term"]
+        lines = [f"# {term['title']}", "", term["summary"], "", f"ID：`{term['id']}`", "",
+                 f"数据版本：{result['dataset_version']}；模型版本：{result['schema_version']}。", ""]
+        for section in result["sections"]:
+            concept = section["concept"]
+            lines += ["## " + concept["definition"], "", f"概念：`{concept['id']}`；依据：{', '.join(concept['evidence_ids'])}。", ""]
+            for expression in section["expressions"]:
+                sense = expression["sense"]
+                lines += [f"### {expression['lemma']} · {expression['language']}", "", sense["definition"], "",
+                          sense["usage"], "", f"词性：{expression['part_of_speech']}；词条：`{expression['entry_id']}`；"
+                          f"义项：`{sense['id']}`；状态：{sense['status']}。",
+                          "作品范围：" + (", ".join(sense["work_ids"]) or "未限定") + "；依据：" + ", ".join(sense["evidence_ids"]), ""]
+                for form in expression["forms"]:
+                    lines += [f"- 词形：{form['text']}（{form['kind']}）。{form['note']}"]
+            for relation in concept["relations"]:
+                lines += [f"- {relation['kind']} → `{relation['target_id']}`（{relation['status']}）："
+                          f"{relation['explanation']} 依据：{', '.join(relation['evidence_ids'])}。"]
+        lines += ["## 有方向的译法", ""]
+        for translation in result["translations"]:
+            source = result["endpoints"][translation["source_sense_id"]]
+            target = result["endpoints"][translation["target_sense_id"]]
+            lines += [f"- {source['lemma']} ({source['language']}) → {target['lemma']} ({target['language']})；"
+                      f"`{translation['id']}`；{translation['status']}；{scope_label(translation['scope'], result)}。{translation['note']}",
+                      "  证据：" + ", ".join(translation["evidence_ids"])]
+        for choice in result["project_choices"]:
+            lines += ["", f"项目选择：{choice['title']} / {choice['translation_id']}；"
+                      f"总体条件：{scope_label(choice['profile_scope'], result)}；选择条件：{scope_label(choice['scope'], result)}。{choice['note']}"]
+        lines += ["", *evidence_markdown(result)]
+        for path, content in result.get("articles", {}).items():
+            lines += ["", "## 辨析文章 · " + path, "", content]
+        return "\n".join(lines) + "\n"
     lines = []
     if "dataset_version" in result:
         lines += [f"数据版本：{result['dataset_version']}；模型版本：{result['schema_version']}。", ""]

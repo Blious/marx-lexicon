@@ -6,7 +6,7 @@ from pydantic import Field
 
 from .models import Model
 
-Kind = Literal["entries", "concepts", "translations", "attestations", "works", "editions", "profiles", "articles"]
+Kind = Literal["terms", "entries", "concepts", "translations", "attestations", "works", "editions", "profiles", "articles"]
 
 
 class Operation(Model):
@@ -28,6 +28,7 @@ class DraftRequest(Model):
     title: str = "未完成的编辑"
     operations: list[Operation] = Field(default_factory=list)
     notes: list[str] = Field(default_factory=list)
+    term_document: dict[str, Any] | None = None
 
 
 class RevisionRequest(Model):
@@ -51,3 +52,18 @@ class ImportRequest(Model):
     destination: Literal["preview", "draft", "publish"] = "preview"
     title: str = "导入资料"
     include_operations: bool = False
+
+
+class ResourceDeletion(Model):
+    kind: Literal["terms", "entries", "senses", "concepts", "translations", "attestations", "works", "editions", "articles"]
+    id: str
+
+
+class TermSaveRequest(Model):
+    expected_revision: int = Field(ge=0)
+    term: dict[str, Any]
+    resources: dict[str, list[dict[str, Any]]] = Field(default_factory=dict)
+    delete: list[ResourceDeletion] = Field(default_factory=list)
+    destination: Literal["publish", "draft"] = "publish"
+    draft_id: str | None = None
+    message: str = "编辑术语"

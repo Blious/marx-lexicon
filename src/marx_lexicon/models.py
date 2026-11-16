@@ -10,7 +10,7 @@ class Model(BaseModel):
 
 
 class Manifest(Model):
-    schema_version: Literal["1"] = "1"
+    schema_version: Literal["2"] = "2"
     dataset_version: str
     title: str
     languages: list[str]
@@ -114,6 +114,7 @@ class Mention(Model):
 
 
 class Passage(Model):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=False)
     id: str
     edition_id: str
     text: str
@@ -183,8 +184,17 @@ class Profile(Model):
     note: str
 
 
+class Term(Model):
+    id: str
+    title: str
+    summary: str = ""
+    concept_ids: list[str] = Field(min_length=1)
+    article: str | None = None
+
+
 class Dataset(Model):
     manifest: Manifest
+    terms: list[Term]
     works: list[Work]
     editions: list[Edition]
     entries: list[Entry]

@@ -30,11 +30,10 @@ def build_database(root: Path, output: Path) -> dict:
         """)
         connection.execute("INSERT INTO metadata VALUES (?, ?)",
                            ("dataset", dataset.model_dump_json()))
-        articles = {}
+        articles = {p.relative_to(root).as_posix(): p.read_text(encoding="utf-8")
+                    for p in (root / "articles").rglob("*.md")}
         for entry in dataset.entries:
-            article = (root / entry.article).read_text(encoding="utf-8") if entry.article else ""
-            if entry.article:
-                articles[entry.article] = article
+            article = articles[entry.article] if entry.article else ""
             connection.execute("INSERT INTO entries VALUES (?, ?, ?, ?)",
                 (entry.id, entry.language, entry.lemma, entry.model_dump_json()))
             connection.executemany("INSERT INTO forms VALUES (?, ?, ?, ?)",
@@ -50,6 +49,7 @@ def build_database(root: Path, output: Path) -> dict:
                            ("articles", json.dumps(articles, ensure_ascii=False)))
     return {"database": str(output), "dataset_version": dataset.manifest.dataset_version,
             "schema_version": dataset.manifest.schema_version,
+            "terms": len(dataset.terms),
             "entries": len(dataset.entries), "attestations": len(dataset.attestations)}
 
 

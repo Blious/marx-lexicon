@@ -12,7 +12,7 @@
 
 ## 哲学
 
-输入并列 `Entfremdung`、`Entäußerung`、`Aufhebung` 和 `Aufheben`。德译中示例分别采用异化、外化，并保留 Aufhebung 的两个语境义项。附属词条 Aufheben 对应另行登记的名词化不定式语例。
+输入并列 `Entfremdung`、`Entäußerung`、`Aufhebung` 和 `Aufheben`。德译中示例分别采用异化、外化，并保留 Aufhebung 的两个语境义项。独立词条 Aufheben 对应另行登记的名词化不定式语例。
 
 对于 Aufhebung，德译英参考包保留宗教语境的 annulment 和私有财产语境的 transcendence。仅凭词面不选其中一个，`recommendation` 为 null，`unresolved` 提示补充义项。
 
@@ -31,7 +31,7 @@ JSON 默认按词条合并重复命中，保留全部跨度与候选。说明通
 精简结果中的 `evidence` 包含当前语言方向的实际用词、出处定位和对应状态。完整短引文、网页链接、逐词对应和书目可按 `read_more` 提供的参数读取：
 
 ```powershell
-python -m marx_lexicon read-evidence att-alienation-pair --language de --language en --dataset-version 0.1.1
+python -m marx_lexicon read-evidence att-alienation-pair --language de --language en --dataset-version 0.2.0
 ```
 
 `--detail full` 输出完整视图；两者的推荐结果和限制条件一致。`compare_reference_size.py` 比较两组示例及重复输入的 JSON 字符数，不将字符数冒充特定模型的 token 数。
@@ -45,3 +45,9 @@ python -m marx_lexicon read-evidence att-alienation-pair --language de --languag
 ## 网页与 MCP
 
 本地网页和两种 MCP 启动方式见 [接口说明](../docs/interfaces.md)，连接示例见 [stdio](mcp-stdio.json) 与 [HTTP](mcp-http.json)。全库及项目的 CSV、TBX 和 SKOS 导出见 [导出约定](../docs/exports.md)。
+
+## 整体术语查阅与编辑
+
+运行 `./start-web.ps1 -WithMcp`，首页展示七个多语言术语。劳动力包含两个独立英语表达；Aufhebung 汇总两个语境，Aufheben 独立关联，共享中文“扬弃”的其他义项在整体保存时保留。
+
+MCP 先调用 `list_terms(query="扬弃")`，再 `read_term(term_id="term-aufhebung", detail="full")`。编辑时调用 `read_editable_term` 获取 document 与 revision，通过 `preview_term`／`save_term` 保存。网页 `/manage` 支持自动 ID、引用选择、整体草稿和术语包下载；复杂批次与项目全局设置位于 `/manage/advanced`。字段和部分更新示例见[编辑指南](../docs/editing.md)。

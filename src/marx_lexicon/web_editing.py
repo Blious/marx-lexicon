@@ -3,7 +3,7 @@
 from fastapi import Query, Request
 from fastapi.responses import JSONResponse
 
-from .edit_models import ArticlePreviewRequest, ChangeBatch, DraftRequest, ImportRequest, RevisionRequest
+from .edit_models import ArticlePreviewRequest, ChangeBatch, DraftRequest, ImportRequest, RevisionRequest, TermSaveRequest
 from .editing import EditingConflict, InvalidChanges
 from .web import render_markdown
 
@@ -26,10 +26,39 @@ def mount_editor(app, editor, templates, metadata):
                 return JSONResponse({"detail": "编辑请求须来自当前本地网页"}, status_code=403)
         return await call_next(request)
 
-    @app.get("/manage")
+    @app.get("/manage/advanced")
     def manage(request: Request):
         return templates.TemplateResponse(request=request, name="manage.html",
                                           context={"meta": metadata(), "editing": True})
+
+    @app.get("/manage")
+    def term_management(request: Request):
+        return templates.TemplateResponse(request=request, name="term_editor.html",
+                                          context={"meta": metadata(), "editing": True})
+
+    @app.get("/api/editor/terms/{term_id}")
+    def editable_term(term_id: str):
+        return editor.read_editable_term(term_id)
+
+    @app.get("/api/editor/catalog")
+    def reference_catalog():
+        return editor.reference_catalog()
+
+    @app.post("/api/editor/terms/assemble")
+    def assemble_term(body: dict):
+        return editor.assemble_term(body)
+
+    @app.post("/api/editor/terms/preview")
+    def preview_term(body: TermSaveRequest):
+        return editor.preview_term(body)
+
+    @app.post("/api/editor/terms/save")
+    def save_term(body: TermSaveRequest):
+        return editor.save_term(body)
+
+    @app.get("/api/editor/unassigned")
+    def unassigned(offset: int = 0, limit: int = 20):
+        return editor.list_unassigned(offset, limit)
 
     @app.get("/api/editor/schema")
     def schema(kind: str | None = None):
