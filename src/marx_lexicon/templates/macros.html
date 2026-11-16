@@ -1,0 +1,2 @@
+{% macro evidence_links(ids, version) %}<div class="evidence-links">{% for id in ids %}<a href="/evidence/{{ id }}?dataset_version={{ version }}">{{ id }} ↗</a>{% endfor %}</div>{% endmacro %}
+{% macro entry_cards(entries) %}<div class="cards">{% for entry in entries %}<article class="card"><span class="eyebrow">{{ entry.language }}</span><h2><a href="/entries/{{ entry.id }}">{{ entry.lemma }}</a></h2>{% for sense in entry.senses %}<p>{{ sense.definition }}</p>{% endfor %}</article>{% endfor %}</div>{% endmacro %}

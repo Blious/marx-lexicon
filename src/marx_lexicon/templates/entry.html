@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% from "macros.html" import evidence_links %}
+{% block title %}{{ result.entry.lemma }} · 马克思多语术语库{% endblock %}
+{% block content %}<a href="/">← 查阅词条</a><div class="intro"><span class="eyebrow">{{ result.entry.language }} / {{ result.entry.part_of_speech }}</span><h1>{{ result.entry.lemma }}</h1><code>{{ result.entry.id }}</code></div>
+{% if result.entry.forms %}<aside class="notice"><strong>已登记词形</strong>{% for f in result.entry.forms %}<p>{{ f.text }} <span class="badge">{{ f.kind }}</span> {{ f.note }}</p>{% endfor %}</aside>{% endif %}
+{% for sense in result.entry.senses %}<section class="sense" id="{{ sense.id }}"><span class="eyebrow">义项 {{ loop.index }} · {{ sense.status|status }}</span><h2>{{ sense.definition }}</h2><p>{{ sense.usage }}</p><code>{{ sense.id }}</code><p><a href="/concepts/{{ sense.concept_id }}">查看概念与辨析 →</a></p>
+{{ evidence_links(sense.evidence_ids,result.dataset_version) }}
+<h3>译法与关联</h3>{% for t in result.translations %}{% if sense.id in [t.source_sense_id,t.target_sense_id] %}<article class="translation"><p>{% for id in [t.source_sense_id,t.target_sense_id] %}{% set e=sense_map[id] %}<a href="/entries/{{ e.entry_id }}#{{ id }}">{{ e.lemma }} · {{ e.language }}</a>{% if loop.first %} → {% endif %}{% endfor %} <span class="badge">{{ t.status|status }}</span></p><p>{{ t.note }}</p><p class="muted">适用范围：{{ t.scope|scope(meta) }}</p><code>{{ t.id }}</code>{{ evidence_links(t.evidence_ids,result.dataset_version) }}</article>{% endif %}{% endfor %}
+{% for choice in choices %}{% if sense.id in [choice.source_sense_id,choice.target_sense_id] %}<div class="notice"><strong>项目选择：{{ choice.profile }}</strong><p>{{ choice.translation_id }}</p><p>项目总体条件：{{ choice.profile_scope|scope(meta) }}。选择条件：{{ choice.scope|scope(meta) }}。{{ choice.note }}</p><p>仅在条件满足且义项已明确时形成方案建议。</p></div>{% endif %}{% endfor %}</section>{% endfor %}
+{% if result.article %}<section class="prose"><h2>辨析文章</h2>{{ result.article|md(result.entry.article) }}</section>{% endif %}
+<section><h2>原文与译本证据</h2>{{ evidence_links(result.attestations|map(attribute='id')|list,result.dataset_version) }}</section>{% endblock %}

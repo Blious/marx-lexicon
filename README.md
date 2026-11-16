@@ -59,6 +59,28 @@ python -m pytest
 python -X utf8 examples/compare_reference_size.py
 ```
 
+## 本地网页、MCP 与标准导出
+
+```powershell
+python -m pip install -e ".[web,mcp,export]"
+python -m marx_lexicon serve --with-mcp
+```
+
+网页为 `http://127.0.0.1:8000/`，MCP 为 `http://127.0.0.1:8000/mcp`。网页提供检索筛选、义项辨析、版本对照、段落术语参考与下载；不生成整段译文。省略 `--with-mcp` 可只运行网页。
+
+```powershell
+python -m marx_lexicon mcp --transport stdio
+python -m marx_lexicon mcp --transport streamable-http --port 8001
+python -m marx_lexicon export-dataset --format json --output build/dataset.json
+python -m marx_lexicon export-dataset --format tbx --output build/lexicon.tbx
+python -m marx_lexicon export-dataset --format skos --output build/concepts.ttl
+python -m marx_lexicon export-glossary --profile demo-de-en --format csv --output build/demo-de-en.csv
+```
+
+全库支持 JSON、Markdown、CSV、TBX-Basic DCA 和 SKOS Turtle；项目表支持前四种。文件旁同时保存 `.report.json`，说明映射与信息损失；仅全库 JSON 是含全部文章的完整语义快照。详见[网页／HTTP／MCP 使用说明](docs/interfaces.md)和[导出约定](docs/exports.md)。
+
+运行全部测试前安装 `python -m pip install -e ".[web,mcp,export,dev]"`。标准校验资源已固定，安装依赖后测试无需在线读取来源。
+
 ## 目录与维护
 
 | 目录 | 用途 |
@@ -80,4 +102,4 @@ python -X utf8 examples/compare_reference_size.py
 
 每次完成更改后都必须提交并推送到远端，具体流程见[本地开发文档](docs/development.md)。
 
-详见[架构方案](docs/architecture.md)、[数据模型与编辑约定](docs/data-model.md)、[AI 翻译参考](docs/ai-translation.md)和[示例说明](examples/README.md)。本阶段提供本地数据与命令行；网页、API、MCP 和 TBX／SKOS 导出将在此基础上接入。
+详见[架构方案](docs/architecture.md)、[数据模型与编辑约定](docs/data-model.md)、[AI 翻译参考](docs/ai-translation.md)和[示例说明](examples/README.md)。程序 0.2.0 已提供本地网页、HTTP、MCP 及标准导出；数据版本仍为 0.1.1，学术审阅状态不因新增接口而改变。

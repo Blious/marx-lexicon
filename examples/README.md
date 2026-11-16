@@ -41,3 +41,7 @@ python -m marx_lexicon read-evidence att-alienation-pair --language de --languag
 `read-entry ... --format markdown --output build/词条.md` 可导出包含文章与出处的词条。`export-glossary` 输出方案的术语表和全部相关语例。查询数据来自已构建数据库，修改 YAML 后要再次 build。
 
 所有样例关系和解释都是待审阅工作稿。增加例证时，先登记具体版本，再标注短引文及词语位置；同语种其他译法也应独立登记其来源。
+
+## 网页与 MCP
+
+本地网页和两种 MCP 启动方式见 [接口说明](../docs/interfaces.md)，连接示例见 [stdio](mcp-stdio.json) 与 [HTTP](mcp-http.json)。全库及项目的 CSV、TBX 和 SKOS 导出见 [导出约定](../docs/exports.md)。

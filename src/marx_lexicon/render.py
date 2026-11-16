@@ -107,14 +107,21 @@ def markdown(result):
                   "## 证据", "", *evidence_markdown(result)]
     elif "rows" in result:
         lines += [f"# {result['profile']['title']}", "", result["profile"]["note"], "",
+                  "方案总体范围：" + scope_label(result["profile"]["scope"], result), "",
                   "| 原词 | 义项 | 目标词 | 方案选用 | 范围与说明 | 依据 |",
                   "| --- | --- | --- | --- | --- | --- |"]
         for row in result["rows"]:
             lines.append("| " + " | ".join(cell(value) for value in (
-                row["source"], row["definition"], row["target"],
+                row["source"], row["definition"] + " " + row.get("usage", ""), row["target"],
                 "是" if row["selected_by_profile"] else "备选",
                 scope_label(row["scope"], result) + " " + row["note"]
-                + " 方案选择范围：" + " / ".join(scope_label(scope, result) for scope in row["selection_scopes"]),
+                + " 状态：" + row.get("status", "未登记")
+                + " 原义项状态：" + row.get("source_sense", {}).get("status", "未登记")
+                + " 目标义项状态：" + row.get("target_sense", {}).get("status", "未登记")
+                + " 目标义项：" + row.get("target_sense", {}).get("definition", "")
+                + " " + row.get("target_sense", {}).get("usage", "")
+                + " 方案选择范围：" + " / ".join(scope_label(scope, result) for scope in row["selection_scopes"])
+                + " 选择说明：" + " / ".join(choice["note"] for choice in row.get("profile_choices", [])),
                 ", ".join(row["evidence_ids"]))) + " |")
         lines += ["", "## 证据", "", *evidence_markdown(result)]
     elif "attestations" in result:

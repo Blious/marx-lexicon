@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "marx-lexicon": {
+      "command": "python",
+      "args": ["-m", "marx_lexicon", "--root", "E:/Github/marx-lexicon", "mcp", "--transport", "stdio"]
+    }
+  }
+}

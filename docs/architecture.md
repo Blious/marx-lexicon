@@ -4,7 +4,7 @@
 
 同一套有出处的多语数据同时服务于术语查阅、上下文辨析和翻译项目。编辑者能够追溯原词出现和实际译本用词，翻译程序能够按义项、作品、版本及项目方案取得建议。
 
-首批以六组德中英术语验证完整流程，交付数据模型、工作稿语例、人工可读文章和命令行。数据结构允许扩展语言、作品和研究传统；当前覆盖不代表已建立全面词汇表。
+首批以六组德中英术语验证完整流程，已交付数据模型、工作稿语例、文章、命令行、本地查阅网页、HTTP、MCP 和五种导出格式。数据结构允许扩展语言、作品和研究传统；当前覆盖不代表已建立全面词汇表。
 
 ## 数据流与维护边界
 
@@ -19,12 +19,13 @@ flowchart TB
     S --> CLI[命令行]
     CLI --> J[JSON 供程序调用]
     CLI --> H[Markdown 供人工阅读]
-    S -.后续接入.-> W[网页 / HTTP API / MCP]
+    S --> W[本地网页 / HTTP API / MCP]
+    S --> E[JSON / Markdown / CSV / TBX / SKOS]
 ```
 
 YAML 和 Markdown 是编辑来源。SQLite 保存完整结构化快照、文章内容和索引，可独立查询并随时重建。编辑变更经构建才进入查询结果，网页编辑如在未来引入，也应进入同一编辑流程。
 
-本阶段使用 Python 3.11+、Pydantic 2、PyYAML 和标准库 SQLite／argparse。JSON Schema 从 Pydantic 定义导出。服务逻辑不依赖命令行，也不依赖外部文献服务在线；后续网页与 MCP 直接调用该模块。
+本阶段使用 Python 3.11+、Pydantic 2、PyYAML 和标准库 SQLite／argparse。JSON Schema 从 Pydantic 定义导出。服务逻辑不依赖命令行，也不依赖外部文献服务在线；网页与 MCP 直接调用该模块；可选依赖组保持基础 CLI 安装简洁。
 
 ## 词汇、概念和文献证据
 
@@ -66,14 +67,14 @@ erDiagram
 
 明确义项通过 `--sense` 提供。系统不从词频或近似语义强行选定 `Aufhebung` 的含义，不进行通用德文词形分析，也不把未命中理解为不存在术语。
 
-`Lexicon.lookup`、`read_entry`、`read_evidence`、`prepare_translation` 和 `export_glossary` 是后续服务共用的入口；CLI 将其结果输出为 JSON 或 Markdown。`prepare_translation` 返回候选与方案参考，不承担整段翻译。精简视图的字段和信息保留约定见 [AI 翻译参考](ai-translation.md)。
+`Lexicon.lookup`、`read_entry`、`read_evidence`、`prepare_translation` 和 `export_glossary` 是各入口共用的业务接口；CLI 将其结果输出为 JSON 或 Markdown。`prepare_translation` 返回候选与方案参考，不承担整段翻译。精简视图的字段和信息保留约定见 [AI 翻译参考](ai-translation.md)。
 
 ## 扩展与标准交换
 
 - 收词按作品、版本、时期与语言推进。当前覆盖清单见 `data/coverage.yaml`；后续将覆盖统计接入构建，避免把少量示例描述为全库覆盖。
 - MEGA² 外部证据通过 provider、evidence ID 和 version 登记。本轮没有运行期网络适配器，不搬运整部文献库。
-- 网页增加查词、词条、版本比较和浏览入口；HTTP／MCP 复用业务模块，保持人工与程序结果一致。
-- TBX 用于术语交换，导出时明确 dialect 及字段损失；SKOS 用于主题组织和概念映射。当前 JSON Schema 是本项目格式，不宣称符合 TBX 或完整实现 OntoLex。
+- 网页已提供查词、义项辨析、版本对照、概念、来源目录和段落参考；HTTP／MCP 复用业务模块，保持人工与程序结果一致。使用说明见 [网页与 MCP](interfaces.md)。
+- TBX-Basic DCA 用于术语交换，SKOS Turtle 用于概念组织；[导出约定](exports.md)明确字段映射与信息损失。当前 JSON Schema 是本项目格式，不宣称符合 TBX 或完整实现 OntoLex。
 - 如多人同时编辑成为实际需要，再引入编辑服务和数据库写入机制，届时明确唯一编辑来源及迁移方式。
 
 建模参考：[OntoLex-lemon](https://www.w3.org/2016/05/ontolex/) 关于词条、词形和义项的区分；[TBX](https://www.tbxinfo.net/) 关于术语交换；[SKOS](https://www.w3.org/TR/skos-reference/) 关于概念组织。OntoLex-lemon 所引文件为社区规范，SKOS 为 W3C Recommendation。

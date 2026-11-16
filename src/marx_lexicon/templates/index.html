@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% from "macros.html" import entry_cards %}
+{% block content %}<div class="intro"><span class="eyebrow">原词 · 义项 · 版本 · 证据</span><h1>从一个词，读到它的语境。</h1><p>查阅德中英术语、比较实际译本，保留同词不同义与有条件的译法。</p></div>
+<form class="search" action="/" method="get"><label for="query">查找术语或说明</label><div class="search-row"><input id="query" name="query" value="{{ filters.query }}" placeholder="例如：劳动力、Arbeitskraft、alienation"><button>检索</button></div>
+<div class="filters"><label>语言<select name="language"><option value="">全部语言</option>{% for l in meta.languages %}<option value="{{ l }}" {% if filters.language==l %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></label>
+<label>作品<select name="work_id"><option value="">全部作品</option>{% for w in meta.works %}<option value="{{ w.id }}" {% if filters.work_id==w.id %}selected{% endif %}>{{ w.title }}</option>{% endfor %}</select></label>
+<label>概念<select name="concept_id"><option value="">全部概念</option>{% for c in meta.concepts %}<option value="{{ c.id }}" {% if filters.concept_id==c.id %}selected{% endif %}>{{ c.labels.get('zh-Hans',c.id) }} · {{ c.labels.get('de','') }}</option>{% endfor %}</select></label></div></form>
+<div class="section-heading"><h2>{% if filters.query %}检索结果{% else %}浏览词条{% endif %}</h2><span>{{ result.total }} 个结果</span></div>
+{% if result.total %}{{ entry_cards(result.results) }}{% else %}<p class="notice">没有找到已登记词条。未命中不表示不存在其他词形或术语。</p>{% endif %}
+<nav class="pagination" aria-label="分页">{% if result.offset>0 %}<a href="{{ previous }}">← 上一页</a>{% endif %}<span>{{ result.offset+1 if result.total else 0 }}—{{ [result.offset+result.limit,result.total]|min }} / {{ result.total }}</span>{% if result.offset+result.limit<result.total %}<a href="{{ next }}">下一页 →</a>{% endif %}</nav>
+{% endblock %}

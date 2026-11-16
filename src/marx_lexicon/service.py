@@ -1,4 +1,4 @@
-"""供命令行、未来网页及 MCP 共用的查询逻辑。"""
+"""供命令行、网页及 MCP 共用的查询逻辑。"""
 
 import json
 import re
@@ -8,6 +8,10 @@ from pathlib import Path
 from .catalog import forms, normalize
 from .database import read_dataset
 from .reference import compact_reference, project_evidence
+
+
+class VersionMismatch(ValueError):
+    pass
 
 
 def scope_matches(scope, work_id, edition_id):
@@ -24,6 +28,8 @@ def scope_state(scope, work_id, edition_id):
 
 class Lexicon:
     def __init__(self, database: Path):
+        if not database.is_file():
+            raise FileNotFoundError("数据库不存在，请先运行 python -m marx_lexicon build，或通过 --database 指定数据库")
         self.connection = sqlite3.connect(database.resolve().as_uri() + "?mode=ro", uri=True)
         self.dataset = read_dataset(self.connection)
         self.entries = {entry.id: entry for entry in self.dataset.entries}
@@ -47,6 +53,51 @@ class Lexicon:
         return {"schema_version": self.dataset.manifest.schema_version,
                 "dataset_version": self.dataset.manifest.dataset_version}
 
+    def get_metadata(self):
+        return {**self.version(), "title": self.dataset.manifest.title,
+                "coverage": self.dataset.manifest.description,
+                "languages": self.dataset.manifest.languages,
+                "counts": {name: len(getattr(self.dataset, name)) for name in
+                           ("entries", "concepts", "translations", "attestations")},
+                "review_counts": {state: sum(e.review_status == state for e in self.dataset.attestations)
+                                  for state in ("unreviewed", "reviewed")},
+                "works": [w.model_dump(mode="json") for w in self.dataset.works],
+                "editions": [e.model_dump(mode="json") for e in self.dataset.editions],
+                "concepts": [{"id": c.id, "labels": c.labels} for c in self.dataset.concepts],
+                "profiles": [p.model_dump(mode="json", exclude={"selections"})
+                             for p in self.dataset.profiles]}
+
+    def list_entries(self, query=None, language=None, work_id=None, concept_id=None, offset=0, limit=20):
+        if offset < 0 or not 1 <= limit <= 100:
+            raise ValueError("offset 须非负，limit 须在 1 至 100 之间")
+        if language and language not in self.dataset.manifest.languages:
+            raise ValueError("未登记的语言：" + language)
+        if work_id and work_id not in {w.id for w in self.dataset.works}:
+            raise KeyError(work_id)
+        if concept_id and concept_id not in self.concepts:
+            raise KeyError(concept_id)
+        if query and query.strip():
+            candidates = self.lookup(query, language, max(len(self.entries), 1))["results"]
+        else:
+            candidates = [self.summary(e.id) for e in sorted(self.dataset.entries,
+                          key=lambda e: (normalize(e.lemma), e.id)) if not language or e.language == language]
+        candidates = [e for e in candidates if any(
+            (not work_id or not s.work_ids or work_id in s.work_ids) and
+            (not concept_id or s.concept_id == concept_id) for s in self.entries[e["id"]].senses)]
+        return {**self.version(), "results": candidates[offset:offset + limit],
+                "total": len(candidates), "offset": offset, "limit": limit}
+
+    def read_concept(self, concept_id):
+        concept = self.concepts[concept_id]
+        identifiers = set(concept.evidence_ids)
+        for relation in concept.relations:
+            identifiers.update(relation.evidence_ids)
+        return {**self.version(), "concept": concept.model_dump(mode="json"),
+                "entries": [self.summary(e.id) for e in self.dataset.entries
+                            if any(s.concept_id == concept_id for s in e.senses)],
+                "related_concepts": [{"id": r.target_id, "labels": self.concepts[r.target_id].labels}
+                                     for r in concept.relations], **self.evidence_bundle(identifiers)}
+
     def summary(self, entry_id):
         entry = self.entries[entry_id]
         return {"id": entry.id, "language": entry.language, "lemma": entry.lemma,
@@ -54,6 +105,8 @@ class Lexicon:
                            for sense in entry.senses]}
 
     def lookup(self, query, language=None, limit=20):
+        if language and language not in self.dataset.manifest.languages:
+            raise ValueError("未登记的语言：" + language)
         query = normalize(query)
         if not query:
             raise ValueError("查询词不能为空")
@@ -97,7 +150,9 @@ class Lexicon:
 
     def read_evidence(self, identifiers, languages=None, dataset_version=None):
         if dataset_version is not None and dataset_version != self.dataset.manifest.dataset_version:
-            raise ValueError("证据请求的数据版本已变化，请重新准备翻译参考")
+            raise VersionMismatch("证据请求的数据版本已变化，请重新准备翻译参考")
+        if not identifiers:
+            raise ValueError("请提供至少一个证据 ID")
         bundle = self.evidence_bundle(identifiers)
         if languages:
             unknown = set(languages) - set(self.dataset.manifest.languages)
@@ -263,6 +318,7 @@ class Lexicon:
 
     def export_glossary(self, profile_id):
         profile = self.profiles[profile_id]
+        self.get_profile(profile_id, profile.source_language, profile.target_language)
         rows = []
         evidence_ids = set()
         for entry in self.dataset.entries:
@@ -270,13 +326,20 @@ class Lexicon:
                 continue
             for sense in entry.senses:
                 for translation in self.dataset.translations:
-                    target, _ = self.senses[translation.target_sense_id]
+                    target, target_sense = self.senses[translation.target_sense_id]
                     if translation.source_sense_id != sense.id or target.language != profile.target_language:
                         continue
                     item = translation.model_dump(mode="json")
                     rows.append({"entry_id": entry.id, "source": entry.lemma,
                                  "sense_id": sense.id,
                                  "definition": sense.definition,
+                                 "source_language": entry.language, "usage": sense.usage,
+                                 "source_sense": sense.model_dump(mode="json"),
+                                 "target_language": target.language, "target_entry_id": target.id,
+                                 "target_sense": target_sense.model_dump(mode="json"),
+                                 "status": item["status"],
+                                 "profile_choices": [s.model_dump(mode="json") for s in profile.selections
+                                                     if s.translation_id == item["id"]],
                                  "target": target.lemma,
                                  "translation_id": item["id"],
                                  "selected_by_profile": any(s.translation_id == item["id"] for s in profile.selections),
@@ -285,5 +348,7 @@ class Lexicon:
                                  "scope": item["scope"], "note": item["note"],
                                  "evidence_ids": item["evidence_ids"]})
                     evidence_ids.update(item["evidence_ids"])
+                    evidence_ids.update(sense.evidence_ids)
+                    evidence_ids.update(target_sense.evidence_ids)
         return {**self.version(), "profile": profile.model_dump(mode="json"),
                 "rows": rows, **self.evidence_bundle(evidence_ids)}

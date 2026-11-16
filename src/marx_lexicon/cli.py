@@ -9,6 +9,7 @@ from .database import build_database
 from .models import Dataset
 from .render import markdown
 from .service import Lexicon
+from .exporting import BASE_URI, export_file
 
 
 def parser():
@@ -17,6 +18,14 @@ def parser():
     cli.add_argument("--database", type=Path, help="查询数据库，默认 <root>/build/lexicon.sqlite")
     commands = cli.add_subparsers(dest="command", required=True)
     commands.add_parser("validate", help="校验 YAML 及跨文件引用")
+    for name in ("serve", "mcp"):
+        command = commands.add_parser(name, help="启动网页" if name == "serve" else "启动只读 MCP")
+        command.add_argument("--host", default="127.0.0.1")
+        command.add_argument("--port", type=int, default=8000 if name == "serve" else 8001)
+        if name == "serve":
+            command.add_argument("--with-mcp", action="store_true")
+        else:
+            command.add_argument("--transport", choices=["stdio", "streamable-http"], default="stdio")
     build = commands.add_parser("build", help="构建 SQLite 检索库")
     build.add_argument("--output", type=Path, help="输出数据库，默认 <root>/build/lexicon.sqlite")
     lookup = commands.add_parser("lookup", help="查询原词、译词和变体")
@@ -41,10 +50,15 @@ def parser():
                          help="JSON 默认 compact，Markdown 默认 full")
     glossary = commands.add_parser("export-glossary", help="导出方案的术语表和出处")
     glossary.add_argument("--profile", required=True)
+    export = commands.add_parser("export-dataset", help="导出全库数据、人工视图或标准交换文件")
+    export.add_argument("--format", choices=["json", "markdown", "csv", "tbx", "skos"], default="json")
+    export.add_argument("--base-uri", default=BASE_URI, help="SKOS 的稳定标识前缀")
+    export.add_argument("--output", type=Path, help="输出文件，默认标准输出")
     schema = commands.add_parser("export-schema", help="从模型导出 JSON Schema")
     schema.add_argument("--output", type=Path, help="输出文件，默认标准输出")
     for command in (lookup, read, evidence, prepare, glossary):
-        command.add_argument("--format", choices=["json", "markdown"], default="json")
+        command.add_argument("--format", choices=["json", "markdown", "csv", "tbx"]
+                             if command is glossary else ["json", "markdown"], default="json")
         command.add_argument("--output", type=Path, help="输出文件，默认标准输出")
     return cli
 
@@ -57,6 +71,34 @@ def main(argv=None):
     args = cli.parse_args(argv)
     root = args.root.resolve()
     try:
+        database = args.database or root / "build/lexicon.sqlite"
+        if args.command in ("serve", "mcp"):
+            with Lexicon(database):
+                pass
+            if args.command == "serve":
+                import uvicorn
+                from .web import create_app
+                uvicorn.run(create_app(database, args.with_mcp), host=args.host, port=args.port)
+            else:
+                from .mcp_server import create_mcp
+                server = create_mcp(database)
+                server.run(transport=args.transport, **({"host": args.host, "port": args.port,
+                           "json_response": True} if args.transport == "streamable-http" else {}))
+            return 0
+        if args.command in ("export-glossary", "export-dataset"):
+            with Lexicon(database) as lexicon:
+                exported = export_file(lexicon, args.format, getattr(args, "profile", None),
+                                       getattr(args, "base_uri", BASE_URI))
+            if args.output:
+                args.output.parent.mkdir(parents=True, exist_ok=True)
+                args.output.write_bytes(exported.content)
+                report = args.output.with_name(args.output.name + ".report.json")
+                report.write_text(json.dumps(exported.report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+                print(f"已写入 {args.output}；导出报告 {report}")
+            else:
+                print(exported.content.decode("utf-8"), end="")
+                print(json.dumps(exported.report, ensure_ascii=False), file=sys.stderr)
+            return 0
         if args.command == "validate":
             dataset = load_dataset(root)
             result = {"status": "valid", "dataset_version": dataset.manifest.dataset_version,
@@ -67,7 +109,7 @@ def main(argv=None):
         elif args.command == "export-schema":
             result = Dataset.model_json_schema()
         else:
-            with Lexicon(args.database or root / "build/lexicon.sqlite") as lexicon:
+            with Lexicon(database) as lexicon:
                 if args.command == "lookup":
                     result = lexicon.lookup(args.query, args.language, args.limit)
                 elif args.command == "read-entry":
@@ -98,4 +140,7 @@ def main(argv=None):
         return 0
     except (DataError, ValueError, KeyError, OSError, sqlite3.Error) as error:
         print(f"错误：{error}", file=sys.stderr)
+        return 1
+    except ModuleNotFoundError as error:
+        print(f"缺少可选依赖 {error.name}，请运行 python -m pip install -e \".[web,mcp,export]\"", file=sys.stderr)
         return 1
