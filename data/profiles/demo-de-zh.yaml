@@ -2,7 +2,7 @@
   title: 德译中示例方案
   source_language: de
   target_language: zh-Hans
-  dataset_version: 0.1.0
+  dataset_version: 0.1.1
   scope: {}
   selections:
   - source_sense_id: sense-de-wert-value

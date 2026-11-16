@@ -30,6 +30,7 @@ def lexicon(database):
 
 
 def prepare(lexicon, text, target="en", edition=CAPITAL, **kwargs):
+    kwargs.setdefault("detail", "full")
     return lexicon.prepare_translation(text, source_language="de", target_language=target,
         profile_id="demo-de-zh" if target == "zh-Hans" else "demo-de-en",
         edition_id=edition, **kwargs)
@@ -190,3 +191,152 @@ def test_cli_exports_unicode_files_and_reports_unknown_id(database, tmp_path, ca
     assert json.loads(output.read_text(encoding="utf-8"))["results"][0]["lemma"] == "价值"
     assert main(["--database", str(database), "read-entry", "missing-entry"]) == 1
     assert "missing-entry" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize("name,edition,target", [
+    ("economics", CAPITAL, "en"), ("economics", CAPITAL, "zh-Hans"),
+    ("philosophy", MANUSCRIPTS, "en"), ("philosophy", MANUSCRIPTS, "zh-Hans"),
+])
+def test_compact_preserves_all_decision_fields(lexicon, name, edition, target):
+    text = (ROOT / f"examples/{name}.de.txt").read_text(encoding="utf-8")
+    full = prepare(lexicon, text, target, edition)
+    compact = prepare(lexicon, text, target, edition, detail="compact")
+    assert compact["format"] == "translation-brief/1"
+    assert "text" not in compact
+    assert compact["context"]["input_characters"] == len(text)
+    assert compact["concept_relations"] == full["concept_relations"]
+    assert compact["notes"][compact["profile"]["note_ref"]] == full["profile"]["note"]
+    assert {term["entry_id"] for term in compact["terms"]} == {item["entry_id"] for item in full["occurrences"]}
+    for original in full["occurrences"]:
+        term = next(item for item in compact["terms"] if item["entry_id"] == original["entry_id"])
+        assert term["unresolved"] == original["unresolved"]
+        assert term["recommendation"] == (original["recommendation"]["translation_id"] if original["recommendation"] else None)
+        assert {item["sense_id"] for item in term["candidates"]} == {item["sense"]["id"] for item in original["candidates"]}
+        for before, after in zip(original["candidates"], term["candidates"], strict=True):
+            sense = before["sense"]
+            for field in ("definition", "concept_id", "work_ids", "status", "evidence_ids"):
+                assert after[field] == sense[field]
+            assert compact["notes"][after["usage_ref"]] == sense["usage"]
+            assert len(after["translations"]) == len(before["translations"])
+            for source, translation in zip(before["translations"], after["translations"], strict=True):
+                for field in ("id", "status", "applicability", "selected_by_profile", "evidence_ids", "target_sense_id"):
+                    assert translation[field] == source[field]
+                assert translation["text"] == source["target"]["lemma"]
+                assert compact["notes"][translation["note_ref"]] == source["note"]
+                scope = compact["scopes"][translation["scope_ref"]]
+                assert scope["work_ids"] == source["scope"]["work_ids"]
+                assert scope["edition_ids"] == source["scope"]["edition_ids"]
+                assert compact["notes"].get(scope.get("note_ref"), "") == source["scope"]["note"]
+                target_sense = source["target_sense"]
+                for field in ("definition", "concept_id", "work_ids", "evidence_ids", "status"):
+                    assert translation.get("target_" + field, sense[field]) == target_sense[field]
+                assert compact["notes"].get(translation.get("target_usage_ref"), sense["usage"]) == target_sense["usage"]
+                for choice, full_choice in zip(translation["profile_choices"], source["profile_choices"], strict=True):
+                    assert choice["applicability"] == full_choice["applicability"]
+                    assert compact["notes"][choice["note_ref"]] == full_choice["note"]
+
+
+def test_compact_groups_repeated_forms_without_dropping_occurrences(lexicon):
+    text = "Wert, Werte; " * 40 + "Arbeitskraft, abstrakte Arbeit."
+    result = prepare(lexicon, text, detail="compact")
+    assert len(result["terms"]) == 3
+    value = next(item for item in result["terms"] if item["lemma"] == "Wert")
+    assert len(value["candidates"]) == 1
+    assert len(value["matches"]) == 2
+    assert sum(len(match["spans"]) for match in value["matches"]) == 80
+    for match in value["matches"]:
+        assert all(text[start:end] == match["surface"] for start, end in match["spans"])
+    all_terms = "Arbeitskraft abstrakte Arbeit Wert Entfremdung Entäußerung Aufhebung Aufheben"
+    unscoped = prepare(lexicon, all_terms, edition=None, detail="compact")
+    assert len(unscoped["terms"]) == 7
+
+
+def test_compact_keeps_target_specific_meaning_and_pending_profile_choice(lexicon):
+    _, target = lexicon.senses["sense-en-value-value"]
+    target.definition = "译语有自己的语义边界。"
+    target.usage = "目标语使用条件不能被源义项覆盖。"
+    target.status = "reviewed"
+    selection = lexicon.profiles["demo-de-en"].selections[0]
+    selection.scope.edition_ids = [CAPITAL]
+    selection.scope.note = "仅在这一原文版本采用。"
+    result = prepare(lexicon, "Wert", edition=None, detail="compact")
+    term = result["terms"][0]
+    translation = term["candidates"][0]["translations"][0]
+    assert term["recommendation"] is None
+    assert translation["target_definition"] == target.definition
+    assert result["notes"][translation["target_usage_ref"]] == target.usage
+    assert translation["target_status"] == "reviewed"
+    assert translation["selected_by_profile"] is False
+    choice = translation["profile_choices"][0]
+    assert choice["applicability"] == "needs_context"
+    assert result["scopes"][choice["scope_ref"]]["edition_ids"] == [CAPITAL]
+    assert result["notes"][result["scopes"][choice["scope_ref"]]["note_ref"]] == selection.scope.note
+
+
+def test_compact_evidence_is_directional_and_recoverable(lexicon):
+    result = prepare(lexicon, "abstrakte Arbeit und Arbeitskraft", detail="compact")
+    assert {edition["language"] for edition in result["editions"].values()} == {"de", "en"}
+    assert "abstract labour" in {t["text"] for term in result["terms"] for c in term["candidates"] for t in c["translations"]}
+    forms = {term["form"] for evidence in result["evidence"].values() for passage in evidence["passages"] for term in passage["terms"]}
+    assert "human labour in the abstract" in forms
+    assert "capacity for labour" in forms
+    followup = result["read_more"]
+    expanded = lexicon.read_evidence(followup["ids"], followup["languages"], followup["dataset_version"])
+    assert {item["id"] for item in expanded["attestations"]} == set(result["evidence"])
+    assert all(edition["citation"] for edition in expanded["editions"])
+    for evidence in expanded["attestations"]:
+        brief = result["evidence"][evidence["id"]]
+        assert brief["review_status"] == evidence["review_status"]
+        assert [a["status"] for a in brief["alignment_summaries"]] == [a["status"] for a in evidence["alignments"]]
+        assert all(p["text"] and p["location"]["url"] for p in evidence["passages"])
+    with pytest.raises(ValueError, match="版本已变化"):
+        lexicon.read_evidence(followup["ids"], followup["languages"], "outdated")
+
+
+def test_compact_preserves_reviewed_word_alignment_indices(lexicon):
+    evidence = lexicon.evidence["att-alienation-pair"]
+    de, zh, en = evidence.passages
+    evidence.alignments.append(Alignment(
+        passage_ids=[de.id, zh.id, en.id], level="term", note="测试精确标注投影", status="reviewed",
+        mention_refs=[MentionReference(passage_id=p.id, mention_index=index)
+                      for p in (de, zh, en) for index in (0, 1)]))
+    result = prepare(lexicon, "Entfremdung, Entäußerung", edition=MANUSCRIPTS, detail="compact")
+    brief = result["evidence"][evidence.id]
+    alignment = brief["term_alignments"][0]
+    assert alignment["status"] == "reviewed"
+    assert result["notes"][alignment["note_ref"]] == "测试精确标注投影"
+    assert set(alignment["passage_ids"]) == {de.id, en.id}
+    assert {ref["passage_id"] for ref in alignment["mention_refs"]} == {de.id, en.id}
+    assert all({term["mention_index"] for term in passage["terms"]} == {0, 1} for passage in brief["passages"])
+
+
+def test_compact_includes_specific_translation_distinctions(lexicon):
+    result = prepare(lexicon, "Arbeitskraft", detail="compact")
+    candidate = result["terms"][0]["candidates"][0]
+    note = result["notes"][candidate["usage_ref"]]
+    assert "劳动的实际运用" in note and "Arbeitsvermögen" in note
+    philosophy = prepare(lexicon, "Aufheben", edition=MANUSCRIPTS, detail="compact")
+    candidate = philosophy["terms"][0]["candidates"][0]
+    assert "不视作其屈折形式" in philosophy["notes"][candidate["usage_ref"]]
+
+
+def test_cli_compact_default_full_opt_in_and_evidence_expansion(database, tmp_path):
+    common = ["--database", str(database), "prepare-translation", "--text-file", str(ROOT / "examples/philosophy.de.txt"),
+              "--source-language", "de", "--target-language", "en", "--profile", "demo-de-en", "--edition", MANUSCRIPTS]
+    output = tmp_path / "compact.json"
+    assert main([*common, "--output", str(output)]) == 0
+    content = output.read_text(encoding="utf-8")
+    assert len(content.splitlines()) == 1
+    result = json.loads(content)
+    assert result["format"] == "translation-brief/1"
+    assert next(t for t in result["terms"] if t["lemma"] == "Aufhebung")["recommendation"] is None
+    full = tmp_path / "full.json"
+    assert main([*common, "--detail", "full", "--output", str(full)]) == 0
+    assert "occurrences" in json.loads(full.read_text(encoding="utf-8"))
+    evidence = tmp_path / "evidence.md"
+    assert main(["--database", str(database), "read-evidence", "att-alienation-pair", "--language", "de",
+                 "--language", "en", "--dataset-version", result["dataset_version"],
+                 "--format", "markdown", "--output", str(evidence)]) == 0
+    assert "Entfremdung" in evidence.read_text(encoding="utf-8")
+    brief_markdown = markdown(result)
+    assert "待判断" in brief_markdown and "annulment" in brief_markdown and "transcendence" in brief_markdown

@@ -24,6 +24,18 @@
 
 此时可选用 transcendence；它是示例所据 Milligan 译本的实际用词，不代表其他英语传统必须沿用。`Aufheben` 的 superseding 另列，不能混作词形。
 
+## AI 精简输出
+
+JSON 默认按词条合并重复命中，保留全部跨度与候选。说明通过 `note_ref`、范围通过 `scope_ref` 引用本包的共享表；这些短引用仅在当前响应内有效。目标义项与源义项相同的字段不重复传输，不同的字段用 `target_` 前缀保留。
+
+精简结果中的 `evidence` 包含当前语言方向的实际用词、出处定位和对应状态。完整短引文、网页链接、逐词对应和书目可按 `read_more` 提供的参数读取：
+
+```powershell
+python -m marx_lexicon read-evidence att-alienation-pair --language de --language en --dataset-version 0.1.1
+```
+
+`--detail full` 输出完整视图；两者的推荐结果和限制条件一致。`compare_reference_size.py` 比较两组示例及重复输入的 JSON 字符数，不将字符数冒充特定模型的 token 数。
+
 ## 人工阅读与数据编辑
 
 `read-entry ... --format markdown --output build/词条.md` 可导出包含文章与出处的词条。`export-glossary` 输出方案的术语表和全部相关语例。查询数据来自已构建数据库，修改 YAML 后要再次 build。

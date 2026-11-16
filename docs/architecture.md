@@ -61,11 +61,12 @@ erDiagram
 1. 识别已登记词形；同一位置优先最长词组，保留相同跨度的同形词条。
 2. 按作品筛选义项，按语言和范围整理译法；范围不足时标为 `needs_context`。
 3. 将项目选择附在候选上；只有义项唯一、范围已匹配且选择唯一时输出方案建议。
-4. 汇总涉及的短语例和版本信息，形成可追溯的参考包。其证据是登记依据，语义判读仍由使用者结合上下文完成。
+4. 补充命中概念的一层直接辨析关系及依据，保留关系的解释和整理状态。
+5. 默认输出去重的精简参考包，保存实际用词、定位和状态；完整短引文、对应关系与书目信息通过 `read_evidence` 按需读取。语义判读仍由使用者结合上下文完成。
 
 明确义项通过 `--sense` 提供。系统不从词频或近似语义强行选定 `Aufhebung` 的含义，不进行通用德文词形分析，也不把未命中理解为不存在术语。
 
-`Lexicon.lookup`、`read_entry`、`prepare_translation` 和 `export_glossary` 是后续服务共用的入口；CLI 将其结果输出为 JSON 或 Markdown。`prepare_translation` 返回候选与方案参考，不承担整段翻译。
+`Lexicon.lookup`、`read_entry`、`read_evidence`、`prepare_translation` 和 `export_glossary` 是后续服务共用的入口；CLI 将其结果输出为 JSON 或 Markdown。`prepare_translation` 返回候选与方案参考，不承担整段翻译。精简视图的字段和信息保留约定见 [AI 翻译参考](ai-translation.md)。
 
 ## 扩展与标准交换
 

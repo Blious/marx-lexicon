@@ -10,7 +10,7 @@
   - id: sense-en-value-value
     definition: 《资本论》商品分析中所讨论的价值；本例聚焦劳动产品作为共同社会实体结晶的表述。
     concept_id: concept-value
-    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    usage: 商品价值语境；Wert 与 Tauschwert、Gebrauchswert、Mehrwert 分别处理。
     work_ids:
     - work-capital-1
     evidence_ids:
@@ -32,7 +32,7 @@
   - id: sense-en-labour-power-labour-power
     definition: 活的人所具有、在生产使用价值时运用的体力和智力能力。
     concept_id: concept-labour-power
-    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    usage: 能力的概念，区别于劳动的实际运用；Arbeitsvermögen 是另一原词。
     work_ids:
     - work-capital-1
     evidence_ids:
@@ -48,7 +48,7 @@
   - id: sense-en-capacity-for-labour-labour-power
     definition: 活的人所具有、在生产使用价值时运用的体力和智力能力。
     concept_id: concept-labour-power
-    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    usage: 能力的概念，区别于劳动的实际运用；Arbeitsvermögen 是另一原词。
     work_ids:
     - work-capital-1
     evidence_ids:
@@ -70,7 +70,7 @@
   - id: sense-en-abstract-labour-abstract-labour
     definition: 商品分析中不按各种具体劳动形式区别的人类劳动这一规定。
     concept_id: concept-abstract-labour
-    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    usage: 识别完整词组和屈折形式；语例中的展开表达与简短显示名分别保存。
     work_ids:
     - work-capital-1
     evidence_ids:
@@ -86,7 +86,7 @@
   - id: sense-en-estrangement-estrangement
     definition: 1844年手稿中用 Entfremdung 表述的异化关系；此条仅覆盖所引占有语境。
     concept_id: concept-estrangement
-    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    usage: 此处与 Entäußerung 并列；这一联系不构成跨作品的同义规则。
     work_ids:
     - work-manuscripts-1844
     evidence_ids:
@@ -102,7 +102,7 @@
   - id: sense-en-alienation-externalization
     definition: 1844年手稿中用 Entäußerung 表述的外化；与 Entfremdung 的关系须逐处分析。
     concept_id: concept-externalization
-    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    usage: 本例的外化用法；Entfremdung 是独立词条，不能归并为拼写变体。
     work_ids:
     - work-manuscripts-1844
     evidence_ids:
@@ -118,7 +118,7 @@
   - id: sense-en-annulment-aufhebung-religion
     definition: 黑格尔批判中讨论宗教和神学的扬弃这一用法；按所引英译本对应 annulment。
     concept_id: concept-aufhebung-religion
-    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    usage: 黑格尔批判中的宗教和神学语境；与私有财产语境的译法分别判断。
     work_ids:
     - work-manuscripts-1844
     evidence_ids:
@@ -134,7 +134,7 @@
   - id: sense-en-transcendence-aufhebung-property
     definition: 共产主义讨论中私有财产和自我异化的积极扬弃这一用法。
     concept_id: concept-aufhebung-property
-    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    usage: 共产主义讨论中私有财产的积极扬弃；与宗教语境分别判断。
     work_ids:
     - work-manuscripts-1844
     evidence_ids:
@@ -150,7 +150,7 @@
   - id: sense-en-superseding-aufheben-dialectical
     definition: 讨论否定与保存、肯定相结合的扬弃活动；原词为名词化不定式 Aufheben。
     concept_id: concept-aufheben-dialectical
-    usage: 仅用于所列作品和语例范围；该义项划分为编辑工作稿，不代表穷尽该词的意义。
+    usage: 名词化不定式；与 Aufhebung 分别建条，不视作其屈折形式。
     work_ids:
     - work-manuscripts-1844
     evidence_ids:

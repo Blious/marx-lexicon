@@ -25,6 +25,10 @@ def parser():
     lookup.add_argument("--limit", type=int, default=20)
     read = commands.add_parser("read-entry", help="读取完整词条")
     read.add_argument("entry_id")
+    evidence = commands.add_parser("read-evidence", help="按需读取完整引文和版本，可筛选语言")
+    evidence.add_argument("ids", nargs="+")
+    evidence.add_argument("--language", action="append", dest="languages", help="可重复指定；默认全部语言")
+    evidence.add_argument("--dataset-version", help="参考包的数据版本，变化时要求重新查询")
     prepare = commands.add_parser("prepare-translation", help="整理段落的术语参考")
     prepare.add_argument("--text-file", type=Path, required=True)
     prepare.add_argument("--source-language", required=True)
@@ -33,11 +37,13 @@ def parser():
     prepare.add_argument("--work")
     prepare.add_argument("--edition")
     prepare.add_argument("--sense", help="显式指定一个命中词条的义项，其他词条仍照常处理")
+    prepare.add_argument("--detail", choices=["compact", "full"],
+                         help="JSON 默认 compact，Markdown 默认 full")
     glossary = commands.add_parser("export-glossary", help="导出方案的术语表和出处")
     glossary.add_argument("--profile", required=True)
     schema = commands.add_parser("export-schema", help="从模型导出 JSON Schema")
     schema.add_argument("--output", type=Path, help="输出文件，默认标准输出")
-    for command in (lookup, read, prepare, glossary):
+    for command in (lookup, read, evidence, prepare, glossary):
         command.add_argument("--format", choices=["json", "markdown"], default="json")
         command.add_argument("--output", type=Path, help="输出文件，默认标准输出")
     return cli
@@ -66,17 +72,22 @@ def main(argv=None):
                     result = lexicon.lookup(args.query, args.language, args.limit)
                 elif args.command == "read-entry":
                     result = lexicon.read_entry(args.entry_id)
+                elif args.command == "read-evidence":
+                    result = lexicon.read_evidence(args.ids, args.languages, args.dataset_version)
                 elif args.command == "prepare-translation":
                     result = lexicon.prepare_translation(
                         args.text_file.read_text(encoding="utf-8"),
                         source_language=args.source_language, target_language=args.target_language,
                         profile_id=args.profile, work_id=args.work, edition_id=args.edition,
-                        sense_id=args.sense)
+                        sense_id=args.sense,
+                        detail=args.detail or ("full" if args.format == "markdown" else "compact"))
                 else:
                     result = lexicon.export_glossary(args.profile)
         output_format = getattr(args, "format", "json")
-        content = (markdown(result) if output_format == "markdown"
-                   else json.dumps(result, ensure_ascii=False, indent=2) + "\n")
+        compact_json = result.get("format") == "translation-brief/1" or args.command == "read-evidence"
+        content = (markdown(result) if output_format == "markdown" else
+                   (json.dumps(result, ensure_ascii=False, separators=(",", ":")) if compact_json
+                    else json.dumps(result, ensure_ascii=False, indent=2)) + "\n")
         destination = getattr(args, "output", None) if args.command != "build" else None
         if destination:
             destination.parent.mkdir(parents=True, exist_ok=True)

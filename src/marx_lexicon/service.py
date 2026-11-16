@@ -7,6 +7,7 @@ from pathlib import Path
 
 from .catalog import forms, normalize
 from .database import read_dataset
+from .reference import compact_reference, project_evidence
 
 
 def scope_matches(scope, work_id, edition_id):
@@ -94,6 +95,17 @@ class Lexicon:
                       if work.id in work_ids],
         }
 
+    def read_evidence(self, identifiers, languages=None, dataset_version=None):
+        if dataset_version is not None and dataset_version != self.dataset.manifest.dataset_version:
+            raise ValueError("证据请求的数据版本已变化，请重新准备翻译参考")
+        bundle = self.evidence_bundle(identifiers)
+        if languages:
+            unknown = set(languages) - set(self.dataset.manifest.languages)
+            if unknown:
+                raise ValueError("未登记的语言：" + ", ".join(sorted(unknown)))
+            bundle = project_evidence(bundle, languages)
+        return {**self.version(), **bundle}
+
     def read_entry(self, entry_id):
         entry = self.entries[entry_id]
         sense_ids = {sense.id for sense in entry.senses}
@@ -134,9 +146,9 @@ class Lexicon:
                 continue
             translations = []
             selections = [selection for selection in profile.selections
-                          if selection.source_sense_id == sense.id
-                          and scope_matches(selection.scope, work_id, edition_id)]
-            selected_ids = {selection.translation_id for selection in selections}
+                          if selection.source_sense_id == sense.id]
+            selected_ids = {selection.translation_id for selection in selections
+                            if scope_matches(selection.scope, work_id, edition_id)}
             for item in self.dataset.translations:
                 if item.source_sense_id != sense.id:
                     continue
@@ -145,17 +157,25 @@ class Lexicon:
                 if target.language != target_language or applicability == "mismatch":
                     continue
                 translations.append({
-                    **item.model_dump(mode="json"), "target": self.summary(target.id),
+                    **item.model_dump(mode="json"),
+                    "target": {"id": target.id, "language": target.language, "lemma": target.lemma},
+                    "target_sense": target_sense.model_dump(mode="json"),
                     "target_definition": target_sense.definition,
                     "selected_by_profile": item.id in selected_ids,
                     "applicability": applicability,
-                    "selection_notes": [s.note for s in selections if s.translation_id == item.id],
+                    "selection_notes": [s.note for s in selections if s.translation_id == item.id
+                                        and scope_matches(s.scope, work_id, edition_id)],
+                    "profile_choices": [{"scope": s.scope.model_dump(mode="json"),
+                                         "applicability": scope_state(s.scope, work_id, edition_id),
+                                         "note": s.note} for s in selections if s.translation_id == item.id],
                 })
             options.append({"sense": sense.model_dump(mode="json"), "translations": translations})
         return options
 
     def prepare_translation(self, text, *, source_language, target_language, profile_id,
-                            work_id=None, edition_id=None, sense_id=None):
+                            work_id=None, edition_id=None, sense_id=None, detail="compact"):
+        if detail not in ("compact", "full"):
+            raise ValueError("detail 须为 compact 或 full")
         profile = self.get_profile(profile_id, source_language, target_language)
         if not text.strip():
             raise ValueError("待译文本不能为空")
@@ -203,21 +223,43 @@ class Lexicon:
                                   "translation_id": chosen[0][1]["id"],
                                   "text": chosen[0][1]["target"]["lemma"]}
                 unresolved = []
+            elif len(options) != 1:
+                recommendation = None
+                unresolved = ["存在多个义项，需要结合上下文明确。" if options
+                              else "当前作品范围内未登记适用义项。"]
             else:
                 recommendation = None
-                unresolved = ["需要指定义项或补充适用的方案选择。"]
+                if not options[0]["translations"]:
+                    unresolved = ["当前目标语言或范围内没有可用译法。"]
+                elif len(chosen) != 1:
+                    unresolved = ["缺少唯一的适用方案选择。"]
+                else:
+                    unresolved = ["译法范围尚缺少作品或版本条件。"]
             for option in options:
                 evidence_ids.update(option["sense"]["evidence_ids"])
                 for item in option["translations"]:
                     evidence_ids.update(item["evidence_ids"])
+                    evidence_ids.update(item["target_sense"]["evidence_ids"])
             occurrences.append({"entry_id": entry_id, "lemma": entry.lemma,
                                 "start": start, "end": end, "surface": text[start:end],
                                 "candidates": options, "recommendation": recommendation,
                                 "unresolved": unresolved})
-        return {**self.version(), "profile_id": profile.id, "source_language": source_language,
+        concept_ids = {option["sense"]["concept_id"] for item in occurrences for option in item["candidates"]}
+        relations = []
+        for identifier in sorted(concept_ids):
+            for relation in self.concepts[identifier].relations:
+                target = self.concepts[relation.target_id]
+                relations.append({"source_concept_id": identifier, **relation.model_dump(mode="json"),
+                                  "target_labels": {language: label for language, label in target.labels.items()
+                                                    if language in (source_language, target_language)}})
+                evidence_ids.update(relation.evidence_ids)
+        result = {**self.version(), "profile_id": profile.id, "source_language": source_language,
                 "target_language": target_language, "work_id": work_id, "edition_id": edition_id,
+                "profile": {"id": profile.id, "scope": profile.scope.model_dump(mode="json"), "note": profile.note},
+                "concept_relations": relations,
                 "text": text, "occurrences": occurrences, **self.evidence_bundle(evidence_ids),
                 "note": "参考包仅覆盖已登记词形；未命中不表示文本没有其他术语。义项须结合上下文判断。"}
+        return compact_reference(result) if detail == "compact" else result
 
     def export_glossary(self, profile_id):
         profile = self.profiles[profile_id]

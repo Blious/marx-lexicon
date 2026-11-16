@@ -1,5 +1,5 @@
 schema_version: '1'
-dataset_version: 0.1.0
+dataset_version: 0.1.1
 title: 马克思多语术语库
 languages:
 - de
